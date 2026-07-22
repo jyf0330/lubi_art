@@ -3,6 +3,7 @@ extends NinePatchRect
 const DATA_PROVIDER_SCRIPT := preload("res://Data/GameDataProvider.gd")
 const SESSION_STORE_SCRIPT := preload("res://Data/GameSessionStore.gd")
 const CLOCK_INDICATOR_SCENE := preload("res://FloatingUI/Prefabs/ClockIndicator.tscn")
+const PET_UNIT_SCENE := preload("res://Battle/Prefabs/Pet/BattleUnit.tscn")
 
 const ANIM_SHOW_THREE_OPTION := &"show_Three_Option"
 const ANIM_HIDE_THREE_OPTION := &"hide_Three_Option"
@@ -67,6 +68,8 @@ const CREATURE_BACKGROUND_TEXTURE_DIR := "res://FloatingUI/images/card_backgroun
 const CREATURE_BACKGROUND_NODE_NAME := &"CreatureBackground"
 const CREATURE_FRAME_NODE_NAME := &"CreatureFrame"
 const CREATURE_TOPPER_NODE_NAME := &"CreatureTopper"
+const SHARED_PET_VIEW_NODE_NAME := &"SharedPetView"
+const SHARED_PET_VIEW_META := &"uses_shared_pet_prefab"
 const CREATURE_TOPPER_CENTER := Vector2(110.0, 10.0)
 const MERGE_INDICATOR_TEXTURE_PATH := "res://FloatingUI/images/Indicators/sprite_merge_upgrade_chevrons_220.png"
 const MERGE_INDICATOR_CLIP_NODE_NAME := &"MergeIndicatorClip"
@@ -536,7 +539,28 @@ func _configure_inventory_button(button: TextureButton) -> void:
 	button.texture_hover = null
 	button.texture_pressed = null
 	button.texture_disabled = null
-	_configure_creature_button(button)
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	button.ignore_texture_size = true
+	button.custom_minimum_size = CREATURE_SLOT_SIZE
+	button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	button.mouse_filter = Control.MOUSE_FILTER_STOP
+	button.set_meta(SHARED_PET_VIEW_META, true)
+	_ensure_shared_pet_view(button).call("clear_collection_data")
+
+
+func _ensure_shared_pet_view(button: TextureButton) -> Control:
+	var pet_view := button.get_node_or_null(NodePath(SHARED_PET_VIEW_NODE_NAME)) as Control
+	if pet_view != null:
+		return pet_view
+	pet_view = PET_UNIT_SCENE.instantiate() as Control
+	pet_view.name = SHARED_PET_VIEW_NODE_NAME
+	pet_view.position = Vector2.ZERO
+	pet_view.size = CREATURE_SLOT_SIZE
+	pet_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	button.add_child(pet_view)
+	return pet_view
 
 
 func _configure_creature_button(button: TextureButton) -> void:
@@ -1055,6 +1079,29 @@ func _set_creature_item_texture(
 	item_texture: Texture2D,
 	quality: StringName = CREATURE_QUALITY_BRONZE
 ) -> void:
+	if bool(button.get_meta(SHARED_PET_VIEW_META, false)):
+		button.texture_normal = null
+		var pet_view := _ensure_shared_pet_view(button)
+		if item_texture == null:
+			pet_view.call("clear_collection_data")
+		else:
+			var frame_render_size := _get_creature_frame_render_size(quality)
+			pet_view.call("set_collection_data", {
+				"texture_path": item_texture.resource_path,
+				"quality": String(quality),
+			}, {
+				"slot_size": CREATURE_SLOT_SIZE,
+				"background_texture": _get_creature_background_texture(item_texture),
+				"sprite_texture": item_texture,
+				"frame_texture": _get_creature_frame_texture(quality),
+				"frame_position": (CREATURE_SLOT_SIZE - frame_render_size) * 0.5,
+				"frame_size": frame_render_size,
+				"topper_texture": _get_creature_topper_texture(),
+				"topper_position": CREATURE_TOPPER_CENTER,
+				"topper_scale": Vector2.ONE * (frame_render_size.x / CREATURE_SLOT_SIZE.x),
+			})
+		_refresh_merge_indicators()
+		return
 	button.texture_normal = item_texture
 	button.set_meta("creature_quality", quality)
 	var background := button.get_node_or_null(NodePath(CREATURE_BACKGROUND_NODE_NAME)) as TextureRect

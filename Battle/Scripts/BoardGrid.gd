@@ -14,7 +14,7 @@ const CELL_OUTLINE_COLOR := Color(0.86, 0.89, 0.91, 0.34)
 const CELL_OUTLINE_SHADOW := Color(0.13, 0.08, 0.03, 0.12)
 const FILE_LABELS := "abcdefgh"
 const CELL_SCENE := preload("res://Battle/Scenes/BoardCell.tscn")
-const UNIT_SHADOW_SCENE := preload("res://Scenes/shadow.tscn")
+const PET_UNIT_SCENE := preload("res://Battle/Prefabs/Pet/BattleUnit.tscn")
 const DATA_PROVIDER_SCRIPT := preload("res://Data/GameDataProvider.gd")
 const SESSION_STORE_SCRIPT := preload("res://Data/GameSessionStore.gd")
 const CLOCK_INDICATOR_SCENE := preload("res://FloatingUI/Prefabs/ClockIndicator.tscn")
@@ -69,7 +69,6 @@ const HEALTH_NUMBER_CENTER := Vector2(0.5, 0.62)
 const ATTACK_NUMBER_CENTER := Vector2(0.57, 0.59)
 const STAT_NUMBER_COLOR := Color.WHITE
 const STAT_NUMBER_PREVIEW_COLOR := Color(1.0, 0.22, 0.14)
-const STAT_NUMBER_SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.95)
 const ACTION_STEP_DELAY := 0.16
 const BULLET_FLIGHT_DURATION := 0.32
 const BULLET_ARC_MIN_HEIGHT := 72.0
@@ -328,15 +327,11 @@ func _update_hover_frame() -> void:
 	_hover_frame.visible = _phase == PHASE_DEPLOY and not _is_round_banner_showing
 
 
-func _create_stat_badge(
-	parent: Control,
-	icon_name: String,
-	label_name: String,
+func _stat_badge_presentation(
 	source_texture: Texture2D,
 	region: Rect2,
 	place_at_top: bool,
-	number_center: Vector2,
-	font_color: Color
+	number_center: Vector2
 ) -> Dictionary:
 	var cropped_texture := AtlasTexture.new()
 	cropped_texture.atlas = source_texture
@@ -344,50 +339,21 @@ func _create_stat_badge(
 
 	var badge_height := STAT_ORB_RADIUS / STAT_ORB_RADIUS_TO_BADGE_HEIGHT
 	var badge_size := Vector2(badge_height * region.size.x / region.size.y, badge_height)
-	# Align the circular body with the cell corner instead of aligning the full
-	# decorated texture. The circle overlaps the rounded border slightly; bottle
-	# necks, swords and handles may extend farther outside without being clipped.
 	var corner_offset := STAT_ORB_RADIUS - STAT_ORB_CORNER_OVERLAP
 	var orb_center := Vector2(corner_offset, corner_offset)
 	if not place_at_top:
 		orb_center.y = _cell_size.y - corner_offset
-	var badge_position := orb_center - badge_size * number_center
-
-	var icon := TextureRect.new()
-	parent.add_child(icon)
-	icon.name = icon_name
-	icon.texture = cropped_texture
-	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon.custom_minimum_size = Vector2.ZERO
-	icon.position = badge_position
-	icon.size = badge_size
-	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	icon.z_index = 4
-
-	# Health values can be wider than the bottle itself (especially hero HP), so
-	# the label is deliberately wider than the cropped icon and is not clipped.
+	var icon_position := orb_center - badge_size * number_center
 	var label_width_ratio := 1.58 if place_at_top else 1.24
 	var label_size := Vector2(badge_height * label_width_ratio, badge_height * 0.94)
-	var label_center := badge_position + badge_size * number_center
-	var label := Label.new()
-	parent.add_child(label)
-	label.name = label_name
-	label.position = label_center - label_size * 0.5
-	label.size = label_size
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.add_theme_color_override("font_color", font_color)
-	label.add_theme_color_override("font_outline_color", STAT_NUMBER_SHADOW_COLOR)
-	label.add_theme_color_override("font_shadow_color", STAT_NUMBER_SHADOW_COLOR)
-	label.add_theme_constant_override("outline_size", 2)
-	label.add_theme_constant_override("shadow_offset_x", 2)
-	label.add_theme_constant_override("shadow_offset_y", 2)
-	label.add_theme_constant_override("shadow_outline_size", 2)
-	label.z_index = 5
-
-	return {"icon": icon, "label": label}
+	var label_center := icon_position + badge_size * number_center
+	return {
+		"texture": cropped_texture,
+		"icon_position": icon_position,
+		"icon_size": badge_size,
+		"label_position": label_center - label_size * 0.5,
+		"label_size": label_size,
+	}
 
 
 func _add_unit(unit_data: Dictionary) -> void:
@@ -397,104 +363,81 @@ func _add_unit(unit_data: Dictionary) -> void:
 	if not _is_inside_board(board_index):
 		return
 
-	var unit_node := Control.new()
+	var unit_node := PET_UNIT_SCENE.instantiate() as Control
 	add_child(unit_node)
 	unit_node.name = "Unit_%s_%s" % [String(unit_data["team"]), coord]
 	unit_node.position = _cell_origin(board_index)
 	unit_node.size = _cell_size
-	unit_node.z_index = 10
-	unit_node.mouse_filter = Control.MOUSE_FILTER_STOP
 	unit_node.clip_contents = false
 
-	var shadow := UNIT_SHADOW_SCENE.instantiate() as Control
-	unit_node.add_child(shadow)
-	shadow.name = "UnitShadow"
 	var shadow_scale := _cell_size.x * UNIT_SHADOW_WIDTH_RATIO / UNIT_SHADOW_BASE_SIZE.x
 	var shadow_size := UNIT_SHADOW_BASE_SIZE * shadow_scale
-	shadow.position = Vector2(
+	var shadow_position := Vector2(
 		(_cell_size.x - shadow_size.x) * 0.5,
 		_cell_size.y * UNIT_VISIBLE_BOTTOM_RATIO - shadow_size.y * 0.5 + UNIT_SHADOW_CENTER_Y_OFFSET
 	)
-	shadow.scale = Vector2.ONE * shadow_scale
-	shadow.z_index = -1
-
-	var sprite := Sprite2D.new()
-	unit_node.add_child(sprite)
-	sprite.name = "Sprite"
-	sprite.texture = unit_data.get("sprite", _texture_for_element(String(unit_data["element"])))
-	if bool(unit_data.get("pixel_art", false)):
-		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	var sprite_layout := _sprite_layout_for_cell(sprite.texture)
-	sprite.position = sprite_layout["position"]
-	sprite.scale = Vector2.ONE * float(sprite_layout["scale"])
-
-	var health_badge := _create_stat_badge(
-		unit_node,
-		"HealthIcon",
-		"HpLabel",
+	var sprite_texture := unit_data.get(
+		"sprite", _texture_for_element(String(unit_data["element"]))
+	) as Texture2D
+	var sprite_layout := _sprite_layout_for_cell(sprite_texture)
+	var health_badge := _stat_badge_presentation(
 		PLAYER_HEALTH_ICON if team == TEAM_PLAYER else ENEMY_HEALTH_ICON,
 		HEALTH_ICON_REGION,
 		true,
-		HEALTH_NUMBER_CENTER,
-		Color.WHITE
+		HEALTH_NUMBER_CENTER
 	)
-	var hp_label := health_badge["label"] as Label
-
-	var attack_badge := _create_stat_badge(
-		unit_node,
-		"AttackIcon",
-		"AttackLabel",
+	var attack_badge := _stat_badge_presentation(
 		ATTACK_ICON,
 		ATTACK_ICON_REGION,
 		false,
-		ATTACK_NUMBER_CENTER,
-		STAT_NUMBER_COLOR
+		ATTACK_NUMBER_CENTER
 	)
-	var attack_label := attack_badge["label"] as Label
-
-	var damage_preview_label := Label.new()
-	unit_node.add_child(damage_preview_label)
-	damage_preview_label.name = "DamagePreviewLabel"
-	damage_preview_label.position = Vector2(8.0, _cell_size.y - 42.0)
-	damage_preview_label.size = Vector2(_cell_size.x - 16.0, 34.0)
-	damage_preview_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	damage_preview_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	damage_preview_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	damage_preview_label.visible = false
-	damage_preview_label.add_theme_color_override("font_color", Color(1.0, 0.22, 0.14))
-	damage_preview_label.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.9))
-	damage_preview_label.add_theme_constant_override("shadow_offset_x", 2)
-	damage_preview_label.add_theme_constant_override("shadow_offset_y", 2)
-	damage_preview_label.add_theme_font_size_override("font_size", 26)
-
-	var death_mark := Sprite2D.new()
-	unit_node.add_child(death_mark)
-	death_mark.name = "DeathMarkPreview"
-	death_mark.texture = _death_mark_texture_for_unit(String(unit_data["team"]))
-	death_mark.centered = true
-	death_mark.position = Vector2(_cell_size.x * 0.5, _cell_size.y * 0.15)
-	death_mark.scale = _death_mark_preview_scale(death_mark.texture)
-	death_mark.z_index = 12
-	death_mark.visible = false
 
 	var default_max_hp := int(_battle_defaults.get("player_max_hp", 10)) if team == TEAM_PLAYER else int(_battle_defaults.get("enemy_max_hp", 5))
 	var max_hp := int(unit_data.get("max_hp", unit_data.get("hp", default_max_hp)))
+	var resolved_data := unit_data.duplicate(true)
+	resolved_data["hp"] = int(unit_data.get("hp", max_hp))
+	resolved_data["attack_damage"] = int(unit_data.get("attack_damage", int(_battle_defaults.get("player_attack_damage", 5)) if team == TEAM_PLAYER else int(_battle_defaults.get("enemy_attack_damage", 1))))
+	unit_node.call("set_battle_data", resolved_data, {
+		"cell_size": _cell_size,
+		"shadow_size": shadow_size,
+		"shadow_position": shadow_position,
+		"shadow_scale": Vector2.ONE * shadow_scale,
+		"sprite_texture": sprite_texture,
+		"sprite_position": sprite_layout["position"],
+		"sprite_scale": Vector2.ONE * float(sprite_layout["scale"]),
+		"pixel_art": bool(unit_data.get("pixel_art", false)),
+		"health": health_badge,
+		"attack": attack_badge,
+		"death_mark_texture": _death_mark_texture_for_unit(team),
+		"death_mark_scale": _death_mark_preview_scale(_death_mark_texture_for_unit(team)),
+	})
+	unit_node.z_index = 10
+	unit_node.mouse_filter = Control.MOUSE_FILTER_STOP
+	var shadow := unit_node.get_node("UnitShadow") as Control
+	var sprite := unit_node.get_node("Sprite") as Sprite2D
+	var health_icon := unit_node.get_node("HealthIcon") as TextureRect
+	var hp_label := unit_node.get_node("HpLabel") as Label
+	var attack_icon := unit_node.get_node("AttackIcon") as TextureRect
+	var attack_label := unit_node.get_node("AttackLabel") as Label
+	var damage_preview_label := unit_node.get_node("DamagePreviewLabel") as Label
+	var death_mark := unit_node.get_node("DeathMarkPreview") as Sprite2D
 	var unit := {
 		"node": unit_node,
 		"shadow": shadow,
 		"sprite": sprite,
-		"health_icon": health_badge["icon"],
+		"health_icon": health_icon,
 		"hp_label": hp_label,
-		"attack_icon": attack_badge["icon"],
+		"attack_icon": attack_icon,
 		"attack_label": attack_label,
 		"damage_preview_label": damage_preview_label,
 		"death_mark": death_mark,
 		"team": team,
 		"element": String(unit_data["element"]),
 		"grid": board_index,
-		"hp": int(unit_data.get("hp", max_hp)),
+		"hp": int(resolved_data["hp"]),
 		"max_hp": max_hp,
-		"attack_damage": int(unit_data.get("attack_damage", int(_battle_defaults.get("player_attack_damage", 5)) if team == TEAM_PLAYER else int(_battle_defaults.get("enemy_attack_damage", 1)))),
+		"attack_damage": int(resolved_data["attack_damage"]),
 		"move_distance": int(unit_data.get("move_distance", int(_battle_defaults.get("enemy_move_distance", 1)))),
 		"movable": bool(unit_data.get("movable", true)),
 		"is_hero": bool(unit_data.get("is_hero", false)),
@@ -2011,8 +1954,14 @@ func _update_unit_visual(unit: Dictionary) -> void:
 	var attack_label := unit["attack_label"] as Label
 	node.modulate = Color.WHITE
 	sprite.modulate = Color.WHITE
-	_set_stat_label_value(hp_label, int(unit["hp"]))
-	_set_stat_label_value(attack_label, int(unit["attack_damage"]))
+	if node.has_method("update_hp"):
+		node.call("update_hp", int(unit["hp"]))
+	else:
+		_set_stat_label_value(hp_label, int(unit["hp"]))
+	if node.has_method("update_attack"):
+		node.call("update_attack", int(unit["attack_damage"]))
+	else:
+		_set_stat_label_value(attack_label, int(unit["attack_damage"]))
 	hp_label.add_theme_color_override("font_color", STAT_NUMBER_COLOR)
 	attack_label.add_theme_color_override("font_color", STAT_NUMBER_COLOR)
 
@@ -2028,16 +1977,21 @@ func _set_stat_label_value(label: Label, value: int) -> void:
 	label.add_theme_font_size_override("font_size", font_size)
 
 
-func _apply_unit_frame_style(_unit: Dictionary, _selected: bool) -> void:
+func _apply_unit_frame_style(unit: Dictionary, selected: bool) -> void:
 	# Selection is communicated by cell highlights and drag modulation. Units no
 	# longer carry a red or blue team frame; health icon color identifies sides.
-	pass
+	var node := unit.get("node") as Control
+	if node != null and node.has_method("set_selected"):
+		node.call("set_selected", selected)
 
 
 func _set_unit_dragging_visual(unit: Dictionary, dragging: bool) -> void:
 	var node := unit["node"] as Control
-	node.z_index = 40 if dragging else 10
-	node.modulate = Color(1.0, 1.0, 1.0, 0.82) if dragging else Color.WHITE
+	if node.has_method("set_dragging"):
+		node.call("set_dragging", dragging)
+	else:
+		node.z_index = 40 if dragging else 10
+		node.modulate = Color(1.0, 1.0, 1.0, 0.82) if dragging else Color.WHITE
 
 
 func _set_begin_button_disabled(disabled: bool) -> void:
