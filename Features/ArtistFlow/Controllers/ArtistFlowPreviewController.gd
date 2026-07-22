@@ -115,7 +115,7 @@ const BAG_BUTTON_SIZE := Vector2(220.0, 168.0)
 @onready var top_sell_button: Button = $"../Top/Top_Sell"
 @onready var shop_back_button: TextureButton = $"../Top/Top_Shop/Shop_BackButton"
 @onready var bag_button: TextureButton = $"../Bags/Bag_Button"
-@onready var gold_label: Label = $"../../GoldCounter/GoldLabel"
+@onready var gold_counter: GoldCounterView = $"../../GoldCounter"
 
 var _is_transitioning := false
 var _current_view := VIEW_THREE_OPTION
@@ -127,6 +127,7 @@ var _shop_buttons: Array[TextureButton] = []
 var _shop_slots: Array[Control] = []
 var _shop_items: Array = []
 var _shop_item_qualities: Array[StringName] = []
+var _shop_offers: Array[Dictionary] = []
 var _party_buttons: Array[TextureButton] = []
 var _party_slots: Array[Control] = []
 var _party_items: Array = []
@@ -210,6 +211,9 @@ func refresh(view_model: Dictionary) -> void:
 
 func _load_project_data() -> void:
 	_shop_data = _data_provider.get_shop_data()
+	_shop_offers.clear()
+	for offer_value in Array(_shop_data.get("offers", [])):
+		_shop_offers.append(Dictionary(offer_value).duplicate(true))
 	_quality_order.clear()
 	for quality in _shop_data.get("quality_order", []):
 		_quality_order.append(StringName(quality))
@@ -221,6 +225,13 @@ func _shop_int(key: String, fallback: int) -> int:
 
 func _shop_path(key: String, fallback := "") -> String:
 	return String(_shop_data.get(key, fallback))
+
+
+func _shop_offer_price(index: int) -> int:
+	if index < 0 or index >= _shop_offers.size():
+		return 2
+	var offer := _shop_offers[index]
+	return maxi(0, int(offer.get("price", offer.get("default_price", 2))))
 
 
 func _load_gold_state() -> void:
@@ -326,8 +337,8 @@ func _change_gold(delta: int) -> void:
 
 
 func _update_gold_display() -> void:
-	if gold_label != null:
-		gold_label.text = str(_gold)
+	if gold_counter != null:
+		gold_counter.set_value(_gold)
 
 
 func _refresh_shop_affordability() -> void:
@@ -337,7 +348,7 @@ func _refresh_shop_affordability() -> void:
 
 		var button := _shop_buttons[index]
 		var has_item := _shop_items[index] != null and _shop_slots[index].visible
-		button.disabled = has_item and _gold < _shop_int("buy_price", 2)
+		button.disabled = has_item and _gold < _shop_offer_price(index)
 		button.modulate = Color(1.0, 1.0, 1.0, 1.0) if not button.disabled else Color(0.65, 0.65, 0.65, 0.72)
 
 
@@ -1262,6 +1273,7 @@ func _set_initial_state() -> void:
 
 	top_shop.visible = false
 	top_shop.position = Vector2(-600.0, 93.0)
+	_is_transitioning = false
 
 
 func _on_three_option_button_pressed(option_index: int = -1) -> void:
@@ -1450,18 +1462,21 @@ func _play_animation(animation_name: StringName) -> void:
 func _refresh_shop_items() -> void:
 	_hide_item_info_panel()
 
-	var featured_creature_path := _shop_path("featured_creature_path", "res://Features/ArtistFlow/Art/Pets/Sprites/Sprite_WhiteFox.png")
-	var item_texture := load(featured_creature_path) as Texture2D
-	if item_texture == null:
-		push_warning("Shop sprite image not found: %s" % featured_creature_path)
-		return
-
 	for index in _shop_buttons.size():
 		var button := _shop_buttons[index]
 		var slot := _shop_slots[index]
+		var offer := _shop_offers[index] if index < _shop_offers.size() else {}
+		var texture_path := String(offer.get("texture_path", ""))
+		var item_texture := load(texture_path) as Texture2D
+		if item_texture == null:
+			button.visible = false
+			slot.visible = false
+			if not texture_path.is_empty():
+				push_warning("Shop offer sprite image not found: %s" % texture_path)
+			continue
 
 		_shop_items[index] = item_texture
-		_shop_item_qualities[index] = CREATURE_QUALITY_BRONZE
+		_shop_item_qualities[index] = _normalize_creature_quality(StringName(offer.get("preview_quality", CREATURE_QUALITY_BRONZE)))
 		slot.visible = true
 		button.visible = true
 		button.disabled = false
@@ -1475,7 +1490,8 @@ func _purchase_shop_item(shop_index: int, target_kind: StringName = TARGET_AUTO,
 	if not _is_shop_item_available(shop_index):
 		return false
 
-	if _gold < _shop_int("buy_price", 2):
+	var purchase_price := _shop_offer_price(shop_index)
+	if _gold < purchase_price:
 		return false
 
 	var item_texture: Texture2D = _shop_items[shop_index]
@@ -1501,7 +1517,7 @@ func _purchase_shop_item(shop_index: int, target_kind: StringName = TARGET_AUTO,
 			was_added = _add_shop_item_to_first_empty_storage(item_texture, item_quality)
 
 	if was_added:
-		_change_gold(-_shop_int("buy_price", 2))
+		_change_gold(-purchase_price)
 		_hide_shop_item(shop_index)
 	else:
 		push_warning("No valid party or bag target for this sprite.")

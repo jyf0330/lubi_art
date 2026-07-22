@@ -1,0 +1,44 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://Features/ArtistFlow/Prefabs/Route/RouteOptionsPanelView.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://Features/ArtistFlow/Prefabs/Route/RouteOptionSlot.tscn" id="2_slot"]
+[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/Debug/Images/Three_Shang.png" id="3_preview"]
+
+[node name="Middle_Three_Option" type="GridContainer"]
+offset_right = 1106.0
+offset_bottom = 490.0
+columns = 3
+script = ExtResource("1_script")
+
+[node name="Three_Option_Slot" parent="." instance=ExtResource("2_slot")]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 6
+
+[node name="Three_Button" type="TextureButton" parent="Three_Option_Slot"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+texture_normal = ExtResource("3_preview")
+
+[node name="Three_Option_Slot2" parent="." instance=ExtResource("2_slot")]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 6
+
+[node name="Three_Button2" type="TextureButton" parent="Three_Option_Slot2"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+texture_normal = ExtResource("3_preview")
+
+[node name="Three_Option_Slot3" parent="." instance=ExtResource("2_slot")]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 6
+
+[node name="Three_Button3" type="TextureButton" parent="Three_Option_Slot3"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+texture_normal = ExtResource("3_preview")

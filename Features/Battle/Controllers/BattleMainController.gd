@@ -14,7 +14,7 @@ const BATTLE_BACKGROUND_TEXTURES: Array[Texture2D] = [
 	preload("res://Features/Battle/Art/UI/battle_bg/bg3.png"),
 ]
 
-@onready var gold_label: Label = $GoldCounter/GoldLabel
+@onready var gold_counter: GoldCounterView = $GoldCounter
 @onready var board_background: TextureRect = $BoardBG
 @onready var board_controller: Control = $BoardGrid
 
@@ -92,5 +92,5 @@ func _save_gold_state() -> void:
 
 
 func _update_gold_display() -> void:
-	if gold_label != null:
-		gold_label.text = str(_gold)
+	if gold_counter != null:
+		gold_counter.set_value(_gold)

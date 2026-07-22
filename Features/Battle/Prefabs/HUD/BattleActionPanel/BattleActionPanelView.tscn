@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://Features/Battle/Prefabs/HUD/BattleActionPanel/BattleActionPanelView.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://Features/Battle/Art/UI/Buttons/button_auto_deploy.png" id="2_auto"]
+[ext_resource type="Texture2D" path="res://Features/Battle/Art/UI/Buttons/button_start_action.png" id="3_begin"]
+
+[node name="ActionPanel" type="Control"]
+offset_right = 267.0
+offset_bottom = 187.0
+script = ExtResource("1_script")
+
+[node name="AutoArrangeButton" type="TextureButton" parent="."]
+layout_mode = 0
+offset_right = 267.0
+offset_bottom = 90.0
+texture_normal = ExtResource("2_auto")
+
+[node name="BeginTurnButton" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 96.0
+offset_right = 260.0
+offset_bottom = 187.0
+texture_normal = ExtResource("3_begin")

@@ -1,5 +1,7 @@
 # 美术项目目录与文件职责
 
+第一次看项目时，建议先读 [`PLAIN_LANGUAGE_GUIDE.md`](PLAIN_LANGUAGE_GUIDE.md)。本文件负责精确目录和硬规则，大白话说明负责解释为什么这样分。新增或修改资源、UI 和动效时同时遵守 [`ART_ASSET_RULES.md`](ART_ASSET_RULES.md)。
+
 ## 当前结构
 
 ```text
@@ -23,17 +25,23 @@
 │   │
 │   ├── ArtistFlow/
 │   │   ├── Views/ArtistFlowView.tscn
-│   │   │   [三选、商店、背包、队伍的现有组合美术场景]
+│   │   │   [只负责逐层实例化并编排 ArtistFlow 预制体]
 │   │   ├── Controllers/
 │   │   │   ├── ArtistFlowPreviewController.gd
 │   │   │   │   [有代码：用 mock 数据驱动组合场景]
 │   │   │   └── ArtistFlowDebugController.gd
 │   │   │       [有代码：调试图片轮换]
 │   │   ├── Prefabs/
-│   │   │   ├── Route/RouteOptionSlot.tscn
-│   │   │   ├── Shop/ShopSlot.tscn
-│   │   │   ├── Inventory/BagSlot.tscn
-│   │   │   └── Party/PartySlot.tscn
+│   │   │   ├── Route/RouteOptionsPanelView.tscn
+│   │   │   │   └── RouteOptionSlot.tscn × 3
+│   │   │   ├── Shop/ShopPanelView.tscn
+│   │   │   │   └── ShopSlot.tscn × 5
+│   │   │   ├── Inventory/InventoryPanelView.tscn
+│   │   │   │   └── BagSlot.tscn × 5
+│   │   │   ├── Inventory/BagLauncherView.tscn
+│   │   │   ├── Party/PartyBarView.tscn
+│   │   │   │   └── PartySlot.tscn × 4
+│   │   │   └── Navigation/TopActionBarView.tscn
 │   │   └── Art/
 │   │       [组合流程使用的图片、宠物、商店人物和生成帧]
 │   │
@@ -55,8 +63,11 @@
 │   ├── Shaders/
 │   ├── Themes/
 │   ├── UI/Buttons/
-│   └── Prefabs/Pet/
-│       [跨战斗、队伍和背包复用的宠物表现资源]
+│   └── Prefabs/
+│       ├── Pet/
+│       │   [跨战斗、队伍和背包复用的宠物表现资源]
+│       └── HUD/GoldCounter/GoldCounterView.tscn
+│           [ArtistFlow 与 Battle 共用的金币显示]
 │
 ├── PreviewData/
 │   ├── Mock/MockGameData.gd
@@ -127,4 +138,4 @@ PNG、序列帧、图标           -> Art
 `setup(view_model)` / `refresh(view_model)` 与语义信号。页面 Controller
 不得把 TextureButton、Label 等深层节点当成跨组件接口。
 
-`ArtistFlow` 当前仍是一个组合大场景，所以保持为一个真实功能目录。将来商店、背包、队伍、路线被拆成独立完整页面后，再分别迁入独立 Feature，不能只改文件夹制造已经拆分的假象。
+`ArtistFlowView` 是页面装配层，不再内嵌商店、背包、队伍、路线和顶部操作栏的完整节点树。这些区域必须继续保持为独立的脚本预制体；页面只实例化、定位并编排它们。只有当某一区域发展为独立完整页面时，才迁入独立 Feature，不能只改文件夹制造已经拆分的假象。

@@ -1,0 +1,60 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://Features/ArtistFlow/Prefabs/Party/PartyBarView.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/UI/Images/新建项目.png" id="2_panel"]
+[ext_resource type="PackedScene" path="res://Features/ArtistFlow/Prefabs/Party/PartySlot.tscn" id="3_slot"]
+[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/Debug/Images/Party_Sun.png" id="4_preview"]
+
+[node name="Party" type="NinePatchRect"]
+offset_right = 940.0
+offset_bottom = 220.0
+texture = ExtResource("2_panel")
+script = ExtResource("1_script")
+
+[node name="Party_Container" type="GridContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -446.0
+offset_right = 446.0
+offset_bottom = 220.0
+grow_horizontal = 2
+columns = 4
+
+[node name="Party_Slot" parent="Party_Container" instance=ExtResource("3_slot")]
+layout_mode = 2
+
+[node name="PareyButton" type="TextureButton" parent="Party_Container/Party_Slot"]
+custom_minimum_size = Vector2(220, 220)
+layout_mode = 2
+texture_normal = ExtResource("4_preview")
+ignore_texture_size = true
+
+[node name="Party_Slot2" parent="Party_Container" instance=ExtResource("3_slot")]
+layout_mode = 2
+
+[node name="PareyButton2" type="TextureButton" parent="Party_Container/Party_Slot2"]
+custom_minimum_size = Vector2(220, 220)
+layout_mode = 2
+texture_normal = ExtResource("4_preview")
+ignore_texture_size = true
+
+[node name="Party_Slot3" parent="Party_Container" instance=ExtResource("3_slot")]
+layout_mode = 2
+
+[node name="PareyButton3" type="TextureButton" parent="Party_Container/Party_Slot3"]
+custom_minimum_size = Vector2(220, 220)
+layout_mode = 2
+texture_normal = ExtResource("4_preview")
+ignore_texture_size = true
+
+[node name="Party_Slot4" parent="Party_Container" instance=ExtResource("3_slot")]
+layout_mode = 2
+
+[node name="PareyButton4" type="TextureButton" parent="Party_Container/Party_Slot4"]
+custom_minimum_size = Vector2(220, 220)
+layout_mode = 2
+texture_normal = ExtResource("4_preview")
+ignore_texture_size = true

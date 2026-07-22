@@ -8,6 +8,9 @@
 [ext_resource type="Texture2D" uid="uid://2lbcw385xxlw" path="res://Features/Battle/Art/Units/UI_GoldCoin_Icon.png" id="6_gold_icon"]
 [ext_resource type="Script" uid="uid://5brpkopj43cp" path="res://Features/Battle/Controllers/BattleMainController.gd" id="7_battle_main_scene"]
 [ext_resource type="Texture2D" path="res://Features/Battle/Art/UI/battle_interface_frame_2.png" id="8_frame"]
+[ext_resource type="PackedScene" path="res://Shared/Prefabs/HUD/GoldCounter/GoldCounterView.tscn" id="9_gold_counter"]
+[ext_resource type="PackedScene" path="res://Features/Battle/Prefabs/Board/BattleBoardPanel.tscn" id="10_board"]
+[ext_resource type="PackedScene" path="res://Features/Battle/Prefabs/HUD/BattleActionPanel/BattleActionPanelView.tscn" id="11_actions"]
 
 [node name="BattleMainView" type="Control" unique_id=475582848]
 layout_mode = 3
@@ -38,72 +41,20 @@ texture = ExtResource("8_frame")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="GoldCounter" type="Control" parent="." unique_id=655183903]
-z_index = 30
-anchors_preset = 0
+[node name="GoldCounter" parent="." instance=ExtResource("9_gold_counter")]
 offset_left = 1664.0
 offset_top = 32.0
 offset_right = 1874.0
 offset_bottom = 96.0
-mouse_filter = 2
 
-[node name="Background" type="TextureRect" parent="GoldCounter" unique_id=1497558014]
-layout_mode = 0
-offset_right = 210.0
-offset_bottom = 64.0
-mouse_filter = 2
-texture = ExtResource("5_gold_bg")
-expand_mode = 1
-
-[node name="CoinIcon" type="TextureRect" parent="GoldCounter" unique_id=744731177]
-layout_mode = 0
-offset_left = 60.0
-offset_top = 17.0
-offset_right = 92.0
-offset_bottom = 49.0
-mouse_filter = 2
-texture = ExtResource("6_gold_icon")
-expand_mode = 1
-
-[node name="GoldLabel" type="Label" parent="GoldCounter" unique_id=401977713]
-layout_mode = 0
-offset_left = 88.0
-offset_top = 8.0
-offset_right = 166.0
-offset_bottom = 56.0
-theme_override_colors/font_color = Color(1, 0.745098, 0.137255, 1)
-theme_override_colors/font_shadow_color = Color(0.180392, 0.105882, 0.0313726, 0.85)
-theme_override_colors/font_outline_color = Color(0.403922, 0.243137, 0.0627451, 0.95)
-theme_override_constants/shadow_offset_x = 2
-theme_override_constants/shadow_offset_y = 2
-theme_override_constants/outline_size = 2
-theme_override_font_sizes/font_size = 38
-text = "15"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="BoardGrid" type="Control" parent="." unique_id=238478531]
-custom_minimum_size = Vector2(1120, 880)
-custom_maximum_size = Vector2(-1, 1)
-anchors_preset = 0
+[node name="BoardGrid" parent="." instance=ExtResource("10_board")]
 offset_left = 400.0
 offset_top = 100.0
 offset_right = 1520.0
 offset_bottom = 101.0
-script = ExtResource("2_duj8u")
 
-[node name="AutoArrangeButton" type="TextureButton" parent="." unique_id=787719622]
-layout_mode = 0
+[node name="ActionPanel" parent="." instance=ExtResource("11_actions")]
 offset_left = 1583.0
 offset_top = 717.0
 offset_right = 1850.0
-offset_bottom = 807.0
-texture_normal = ExtResource("3_4y1r4")
-
-[node name="BeginTurnButton" type="TextureButton" parent="." unique_id=1031191845]
-layout_mode = 0
-offset_left = 1587.0
-offset_top = 813.0
-offset_right = 1843.0
 offset_bottom = 904.0
-texture_normal = ExtResource("4_6bry8")

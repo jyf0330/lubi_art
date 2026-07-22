@@ -4,7 +4,10 @@
 
 本地说明入口：
 
+- `Docs/PLAIN_LANGUAGE_GUIDE.md`：先看这份大白话说明，理解这个项目负责什么、不负责什么。
 - `Docs/PROJECT_STRUCTURE.md`：目录树、文件职责和代码归属。
+- `Docs/ART_ASSET_RULES.md`：资源命名、导入、UI 适配、动效、性能和交付验收规范。
+- `Docs/DELIVERY_TEMPLATE.md`：每个页面或预制体交付时复制填写的验收记录。
 - `Docs/COMPONENT_API.md`：预制体公开方法、信号和接入约束。
 - `Docs/PROGRAM_INTEGRATION.md`：迁入 `/Users/ywh/Documents/godot-latest` 的对应路径。
 - `Features/Battle/README.md`：战斗功能内部文件说明。

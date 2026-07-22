@@ -1,0 +1,34 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://Features/ArtistFlow/Prefabs/Navigation/TopActionBarView.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/UI/Images/新建项目.png" id="2_panel"]
+[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/UI/Images/screenshot-20260708-154732.png" id="3_back"]
+
+[node name="Top" type="NinePatchRect"]
+offset_right = 1160.0
+offset_bottom = 220.0
+texture = ExtResource("2_panel")
+script = ExtResource("1_script")
+
+[node name="Top_Shop" type="GridContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -580.0
+offset_right = 580.00024
+offset_bottom = 219.99994
+grow_horizontal = 2
+
+[node name="Shop_BackButton" type="TextureButton" parent="Top_Shop"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+texture_normal = ExtResource("3_back")
+
+[node name="Top_Sell" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 1160.0
+offset_bottom = 220.0

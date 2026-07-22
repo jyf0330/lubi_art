@@ -1,5 +1,7 @@
 # 迁入真实程序项目说明
 
+第一次迁移前先读 [`PLAIN_LANGUAGE_GUIDE.md`](PLAIN_LANGUAGE_GUIDE.md) 的“美术项目和真实程序项目怎么接”，并按 [`ART_ASSET_RULES.md`](ART_ASSET_RULES.md) 选择验证范围、填写 [`DELIVERY_TEMPLATE.md`](DELIVERY_TEMPLATE.md)。
+
 目标程序项目：`/Users/ywh/Documents/godot-latest`
 
 ## 路径对应

@@ -133,6 +133,17 @@ var _player_attack_directions: Array[Vector2i] = []
 var _player_attack_distances: Array[int] = []
 
 
+func setup(view_model: Dictionary) -> void:
+	var snapshot := Dictionary(view_model.get("snapshot", view_model))
+	if not snapshot.is_empty():
+		_data_provider.set_snapshot(snapshot)
+	_load_battle_data()
+
+
+func refresh(view_model: Dictionary) -> void:
+	setup(view_model)
+
+
 func _ready() -> void:
 	_load_battle_data()
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -213,15 +224,22 @@ func _apply_quick_test_cheat() -> void:
 
 
 func _connect_scene_buttons() -> void:
-	var auto_button := get_parent().get_node_or_null("AutoArrangeButton") as TextureButton
-	if auto_button != null:
-		_auto_arrange_button = auto_button
-		_auto_arrange_button.pressed.connect(_on_auto_arrange_pressed)
+	var action_panel := get_parent().get_node_or_null("ActionPanel")
+	if action_panel == null:
+		return
+	if action_panel.has_signal("auto_arrange_requested"):
+		action_panel.connect("auto_arrange_requested", _on_auto_arrange_pressed)
+	if action_panel.has_signal("begin_turn_requested"):
+		action_panel.connect("begin_turn_requested", _on_begin_turn_pressed)
+	_bind_action_panel_buttons.call_deferred(action_panel)
 
-	var button := get_parent().get_node_or_null("BeginTurnButton") as TextureButton
-	if button != null:
-		_begin_turn_button = button
-		_begin_turn_button.pressed.connect(_on_begin_turn_pressed)
+
+func _bind_action_panel_buttons(action_panel: Control) -> void:
+	if not is_instance_valid(action_panel):
+		return
+	if action_panel.has_method("get_auto_arrange_button"):
+		_auto_arrange_button = action_panel.call("get_auto_arrange_button") as TextureButton
+		_begin_turn_button = action_panel.call("get_begin_turn_button") as TextureButton
 
 
 func _prepare_clock_indicator() -> void:

@@ -1,5 +1,7 @@
 # 美术预制体接口说明
 
+如果还不清楚“公开接口”和“不要访问深层节点”是什么意思，先读 [`PLAIN_LANGUAGE_GUIDE.md`](PLAIN_LANGUAGE_GUIDE.md)。
+
 真实程序只通过公开方法和信号操作美术预制体，不直接访问深层子节点。
 
 ## game 预览装配入口
@@ -23,6 +25,32 @@ signal screen_requested(screen_id, view_model)
 
 页面自身不得直接切换 SceneTree。
 
+## 预览数据契约
+
+`MockGameData.snapshot()` 与真实程序项目
+`/Users/ywh/Documents/godot-latest` 的 `GameSession.current_snapshot()` 使用同一类公开字段：
+
+```text
+phase / stateVersion / stateHash
+coins / leaders / units / board
+roster / shop_offers / inventory
+viewModel
+```
+
+`GameDataProvider` 是唯一表现适配入口：
+
+```text
+get_snapshot()
+set_snapshot(snapshot)
+clear_snapshot_override()
+get_view_model()
+get_battle_units()
+get_shop_data()
+```
+
+假数据只允许替换字段值，不另创一套业务结构。贴图路径、英文品质 key、
+美术项目临时战斗动作等表现适配信息只存在于 Provider，不写回正式 Snapshot。
+
 ## ArtistFlow 槽位预制体
 
 ```text
@@ -43,6 +71,27 @@ RouteOptionSlotView
 ├── get_kind()
 └── signal option_requested(kind)
 ```
+
+## ArtistFlow 组合预制体
+
+```text
+BagLauncherView
+├── setup(view_model) / refresh(view_model)
+├── set_capacity(used, capacity)
+├── get_button()
+└── signal bag_requested
+
+PartyBarView / RouteOptionsPanelView / ShopPanelView / InventoryPanelView
+├── setup(view_model) / refresh(view_model)
+└── get_slots()
+
+TopActionBarView
+├── setup(view_model) / refresh(view_model)
+├── get_back_button() / get_sell_button()
+└── signal back_requested / sell_requested
+```
+
+`ArtistFlowView.tscn` 只实例化以上组合预制体，不重复保存它们的完整节点树。
 
 ## BattleUnit
 
@@ -108,6 +157,17 @@ ClockIndicator
 BattleGridView
 ├── setup(view_model)
 └── get_layout_snapshot()
+
+GoldCounterView
+├── setup(view_model) / refresh(view_model)
+├── set_value(value) / get_value()
+└── signal value_changed(value)
+
+BattleActionPanelView
+├── setup(view_model) / refresh(view_model)
+├── get_auto_arrange_button()
+├── get_begin_turn_button()
+└── signal auto_arrange_requested / begin_turn_requested
 ```
 
 ## 接口约束
