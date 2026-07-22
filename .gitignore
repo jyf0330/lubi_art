@@ -1,3 +1,9 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# Local previews, recordings, logs, and validation artifacts
+/output/
+
+# macOS metadata
+.DS_Store
