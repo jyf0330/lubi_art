@@ -1,0 +1,107 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://Features/Battle/Prefabs/Units/BattleUnit/BattleUnit.gd" id="1_root"]
+[ext_resource type="Script" path="res://Features/Battle/Prefabs/Units/BattleUnit/PetStatusView.gd" id="2_status"]
+[ext_resource type="Script" path="res://Features/Battle/Prefabs/Units/BattleUnit/PetInteraction.gd" id="3_interaction"]
+[ext_resource type="PackedScene" path="res://Features/Battle/Prefabs/Units/UnitShadow.tscn" id="4_shadow"]
+
+[node name="BattleUnit" type="Control"]
+layout_mode = 0
+offset_right = 120.0
+offset_bottom = 100.0
+mouse_filter = 2
+clip_contents = false
+script = ExtResource("1_root")
+
+[node name="UnitShadow" parent="." instance=ExtResource("4_shadow")]
+visible = false
+z_index = -1
+
+[node name="Sprite" type="Sprite2D" parent="."]
+visible = false
+
+[node name="HealthIcon" type="TextureRect" parent="."]
+visible = false
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+z_index = 4
+
+[node name="HpLabel" type="Label" parent="."]
+visible = false
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+z_index = 5
+
+[node name="AttackIcon" type="TextureRect" parent="."]
+visible = false
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+z_index = 4
+
+[node name="AttackLabel" type="Label" parent="."]
+visible = false
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+z_index = 5
+
+[node name="DamagePreviewLabel" type="Label" parent="."]
+visible = false
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 1
+z_index = 6
+
+[node name="DeathMarkPreview" type="Sprite2D" parent="."]
+visible = false
+centered = true
+z_index = 12
+
+[node name="CollectionBackground" type="TextureRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 0
+show_behind_parent = true
+
+[node name="CollectionSprite" type="TextureRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="CollectionFrame" type="TextureRect" parent="."]
+visible = false
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+z_index = 1
+
+[node name="CollectionTopper" type="Sprite2D" parent="."]
+visible = false
+centered = true
+z_index = 2
+
+[node name="PetStatusView" type="Node" parent="."]
+script = ExtResource("2_status")
+hp_label_path = NodePath("../HpLabel")
+attack_label_path = NodePath("../AttackLabel")
+damage_preview_label_path = NodePath("../DamagePreviewLabel")
+
+[node name="PetInteraction" type="Node" parent="."]
+script = ExtResource("3_interaction")

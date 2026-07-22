@@ -1,6 +1,0 @@
-[gd_resource type="Resource" script_class="SpriteInfoDatabase" load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://FloatingUI/Resources/SpriteInfo/SpriteInfoDatabase.gd" id="1_database"]
-
-[resource]
-script = ExtResource("1_database")

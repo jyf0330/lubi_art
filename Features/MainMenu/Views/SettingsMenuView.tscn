@@ -1,0 +1,223 @@
+[gd_scene format=3 uid="uid://bapbycop8gr53"]
+
+[ext_resource type="StyleBox" uid="uid://6djmp2esmdln" path="res://Shared/Themes/hover_button.tres" id="1_ky6ws"]
+[ext_resource type="StyleBox" uid="uid://bpbh2w3xu1u4k" path="res://Shared/Themes/normal_button.tres" id="2_t7in3"]
+[ext_resource type="StyleBox" uid="uid://d37suswmvbtxm" path="res://Shared/Themes/pressed_button.tres" id="3_sghmh"]
+[ext_resource type="StyleBox" uid="uid://b1rk1q2anafg5" path="res://Shared/Themes/menu_border.tres" id="4_0761h"]
+[ext_resource type="StyleBox" path="res://Shared/Themes/menu_inner_border.tres" id="5_hcull"]
+[ext_resource type="Script" path="res://Shared/UI/Buttons/ButtonInnerBorderHighlight.gd" id="6_6bnuh"]
+[ext_resource type="StyleBox" uid="uid://duotbk3m88r3t" path="res://Shared/Themes/hover_inner_button_border.tres" id="7_4owx2"]
+[ext_resource type="StyleBox" uid="uid://dino5ahrvofkb" path="res://Shared/Themes/inner_button_border.tres" id="8_kh5xv"]
+[ext_resource type="StyleBox" path="res://Shared/Themes/resign_button.tres" id="9_qmwdx"]
+[ext_resource type="StyleBox" uid="uid://0f56p7em7dsm" path="res://Shared/Themes/resign_hover_button.tres" id="10_kb264"]
+[ext_resource type="StyleBox" uid="uid://tr68o316gdbi" path="res://Shared/Themes/resign_inner_button_border.tres" id="11_cou62"]
+[ext_resource type="Script" path="res://Features/MainMenu/Controllers/SettingsMenuController.gd" id="12_navigation"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
+
+[sub_resource type="Theme" id="Theme_icjdx"]
+Button/font_sizes/font_size = 32
+Button/styles/focus = SubResource("StyleBoxEmpty_focus")
+Button/styles/hover = ExtResource("1_ky6ws")
+Button/styles/normal = ExtResource("2_t7in3")
+Button/styles/pressed = ExtResource("3_sghmh")
+
+[node name="UISettingsButton" type="Control" unique_id=1882420212]
+z_index = 1000
+z_as_relative = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_icjdx")
+script = ExtResource("12_navigation")
+
+[node name="BackgroundDim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.055, 0.035, 0.02, 0.58)
+
+[node name="Menu" type="NinePatchRect" parent="." unique_id=1132968414]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -284.0
+offset_top = -395.5
+offset_right = 284.0
+offset_bottom = 395.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MenuBorder" type="Panel" parent="Menu" unique_id=1255388022]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("4_0761h")
+
+[node name="MenuInnerBorder" type="Panel" parent="Menu" unique_id=192622498]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("5_hcull")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Menu" unique_id=912884483]
+layout_mode = 0
+offset_left = 58.5
+offset_top = 44.0
+offset_right = 509.5
+offset_bottom = 747.0
+theme_override_constants/separation = 30
+
+[node name="Settings" type="Button" parent="Menu/VBoxContainer" unique_id=523354092]
+custom_minimum_size = Vector2(451, 84)
+layout_mode = 2
+text = "设置"
+script = ExtResource("6_6bnuh")
+hover_inner_border = ExtResource("7_4owx2")
+
+[node name="InnerBorder" type="Panel" parent="Menu/VBoxContainer/Settings" unique_id=673202316]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("8_kh5xv")
+
+[node name="Continue" type="Button" parent="Menu/VBoxContainer" unique_id=357782027]
+custom_minimum_size = Vector2(451, 84)
+layout_mode = 2
+text = "继续游戏"
+script = ExtResource("6_6bnuh")
+hover_inner_border = ExtResource("7_4owx2")
+
+[node name="InnerBorder" type="Panel" parent="Menu/VBoxContainer/Continue" unique_id=1895123478]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("8_kh5xv")
+
+[node name="Save Game" type="Button" parent="Menu/VBoxContainer" unique_id=607715036]
+custom_minimum_size = Vector2(451, 84)
+layout_mode = 2
+text = "保存存档"
+script = ExtResource("6_6bnuh")
+hover_inner_border = ExtResource("7_4owx2")
+
+[node name="InnerBorder" type="Panel" parent="Menu/VBoxContainer/Save Game" unique_id=217068653]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("8_kh5xv")
+
+[node name="Load Game" type="Button" parent="Menu/VBoxContainer" unique_id=704974192]
+custom_minimum_size = Vector2(451, 84)
+layout_mode = 2
+text = "载入存档"
+script = ExtResource("6_6bnuh")
+hover_inner_border = ExtResource("7_4owx2")
+
+[node name="InnerBorder" type="Panel" parent="Menu/VBoxContainer/Load Game" unique_id=1068634595]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("8_kh5xv")
+
+[node name="Main Menu" type="Button" parent="Menu/VBoxContainer" unique_id=661420536]
+custom_minimum_size = Vector2(451, 84)
+layout_mode = 2
+text = "退至主菜单"
+script = ExtResource("6_6bnuh")
+hover_inner_border = ExtResource("7_4owx2")
+
+[node name="InnerBorder" type="Panel" parent="Menu/VBoxContainer/Main Menu" unique_id=1908448194]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("8_kh5xv")
+
+[node name="ResignSpacer" type="Control" parent="Menu/VBoxContainer" unique_id=2137695529]
+custom_minimum_size = Vector2(0, 19)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Resign" type="Button" parent="Menu/VBoxContainer" unique_id=698840373]
+custom_minimum_size = Vector2(451, 84)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.18, 0.05, 1)
+theme_override_styles/normal = ExtResource("9_qmwdx")
+theme_override_styles/hover = ExtResource("10_kb264")
+text = "放弃"
+
+[node name="InnerBorder" type="Panel" parent="Menu/VBoxContainer/Resign" unique_id=1548218504]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("11_cou62")

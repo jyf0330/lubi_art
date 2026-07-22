@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://bnp7ucegp8udq"]
+
+[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/UI/Images/card_frame_transparent_total_height350.png" id="1_tyqid"]
+[ext_resource type="Script" path="res://Features/ArtistFlow/Prefabs/Route/RouteOptionSlotView.gd" id="2_slot"]
+
+[node name="ThreeOptionSlot" type="PanelContainer" unique_id=811508456]
+self_modulate = Color(1, 1, 1, 0)
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("2_slot")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=830312837]
+layout_mode = 2
+texture = ExtResource("1_tyqid")

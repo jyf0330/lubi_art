@@ -1,0 +1,70 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://Features/Battle/Prefabs/HUD/RoundBanner/RoundBanner.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://Features/Battle/Art/UI/round_banner_blank.png" id="2_banner"]
+
+[sub_resource type="Shader" id="Shader_blur"]
+code = "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_linear_mipmap;\nuniform float blur_radius = 4.0;\nuniform vec4 tint_color : source_color = vec4(0.03, 0.02, 0.01, 0.34);\nvoid fragment() {\n\tvec2 offset = SCREEN_PIXEL_SIZE * blur_radius;\n\tvec4 color = texture(screen_texture, SCREEN_UV) * 0.20;\n\tcolor += texture(screen_texture, SCREEN_UV + vec2(offset.x, 0.0)) * 0.10;\n\tcolor += texture(screen_texture, SCREEN_UV - vec2(offset.x, 0.0)) * 0.10;\n\tcolor += texture(screen_texture, SCREEN_UV + vec2(0.0, offset.y)) * 0.10;\n\tcolor += texture(screen_texture, SCREEN_UV - vec2(0.0, offset.y)) * 0.10;\n\tcolor += texture(screen_texture, SCREEN_UV + offset) * 0.10;\n\tcolor += texture(screen_texture, SCREEN_UV - offset) * 0.10;\n\tcolor += texture(screen_texture, SCREEN_UV + vec2(offset.x, -offset.y)) * 0.10;\n\tcolor += texture(screen_texture, SCREEN_UV + vec2(-offset.x, offset.y)) * 0.10;\n\tCOLOR = vec4(mix(color.rgb, tint_color.rgb, tint_color.a), 1.0);\n}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_blur"]
+shader = SubResource("Shader_blur")
+
+[node name="RoundBannerOverlay" type="Control"]
+z_index = 1000
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("1_script")
+
+[node name="BackBuffer" type="BackBufferCopy" parent="."]
+copy_mode = 2
+
+[node name="BlurLayer" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_blur")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 1)
+
+[node name="Banner" type="Control" parent="."]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="BannerTexture" type="TextureRect" parent="Banner"]
+layout_mode = 0
+mouse_filter = 2
+texture = ExtResource("2_banner")
+expand_mode = 1
+
+[node name="Title" type="Label" parent="Banner"]
+layout_mode = 0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.3, 0.1, 0.02, 0.9)
+theme_override_colors/font_outline_color = Color(0.54, 0.25, 0.05, 0.72)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 5
+theme_override_constants/outline_size = 7
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Banner"]
+layout_mode = 0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.86, 1)
+theme_override_colors/font_shadow_color = Color(0.3, 0.1, 0.02, 0.9)
+theme_override_colors/font_outline_color = Color(0.54, 0.25, 0.05, 0.72)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 5
+theme_override_constants/outline_size = 3
+horizontal_alignment = 1
+vertical_alignment = 1
+
