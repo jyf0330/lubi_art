@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://d1l0eejvbwmbi"]
+
+[ext_resource type="Texture2D" path="res://FloatingUI/images/商店界面样式_350px.png" id="1_hye1l"]
+
+[node name="ShopSlot" type="PanelContainer" unique_id=1858513610]
+self_modulate = Color(1, 1, 1, 0)
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=2131068023]
+visible = false
+layout_mode = 2
+texture = ExtResource("1_hye1l")

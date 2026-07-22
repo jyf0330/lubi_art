@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://bq4vnhpqvm54w"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cell"]
+bg_color = Color(0.82, 0.84, 0.86, 0.02)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.86, 0.89, 0.91, 0.34)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0.13, 0.08, 0.03, 0.12)
+shadow_size = 4
+shadow_offset = Vector2(0, 3)
+anti_aliasing = true
+
+[node name="BoardCell" type="Panel"]
+custom_minimum_size = Vector2(0, 0)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_cell")

@@ -1,0 +1,47 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://FloatingUI/Prefabs/ClockIndicator.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://FloatingUI/images/Indicators/clock_dial_body_220.png" id="2_dial"]
+[ext_resource type="Texture2D" path="res://FloatingUI/images/Indicators/pointer_clock_fit.png" id="3_pointer"]
+[ext_resource type="Texture2D" path="res://FloatingUI/images/Indicators/bright_yellow_dot_22.png" id="4_dot"]
+
+[node name="ClockIndicator" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Dial" type="Sprite2D" parent="."]
+texture = ExtResource("2_dial")
+centered = false
+
+[node name="ActiveHourDot1" type="Sprite2D" parent="."]
+texture = ExtResource("4_dot")
+visible = false
+
+[node name="ActiveHourDot2" type="Sprite2D" parent="."]
+texture = ExtResource("4_dot")
+visible = false
+
+[node name="ActiveHourDot3" type="Sprite2D" parent="."]
+texture = ExtResource("4_dot")
+visible = false
+
+[node name="ActiveHourDot4" type="Sprite2D" parent="."]
+texture = ExtResource("4_dot")
+visible = false
+
+[node name="ActiveHourDot5" type="Sprite2D" parent="."]
+texture = ExtResource("4_dot")
+visible = false
+
+[node name="Pointer" type="Sprite2D" parent="."]
+texture = ExtResource("3_pointer")
+centered = false
+
+[node name="DayLabel" type="Label" parent="."]
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.29, 0.16, 0.06, 1)
+theme_override_colors/font_shadow_color = Color(1, 0.86, 0.48, 0.65)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+horizontal_alignment = 1
+vertical_alignment = 1
+

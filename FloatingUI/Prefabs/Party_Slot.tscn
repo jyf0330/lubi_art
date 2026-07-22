@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://celhhj33yk5b7"]
+
+[ext_resource type="Texture2D" path="res://FloatingUI/images/角色预览背景_230x220.png" id="1_svqsp"]
+
+[node name="PartySlot" type="PanelContainer" unique_id=1157309597]
+self_modulate = Color(1, 1, 1, 0)
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Bg" type="TextureRect" parent="." unique_id=851712683]
+visible = false
+layout_mode = 2
+texture = ExtResource("1_svqsp")
