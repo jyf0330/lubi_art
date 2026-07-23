@@ -13,8 +13,8 @@ extends Control
 @onready var collection_sprite: TextureRect = $CollectionSprite
 @onready var collection_frame: TextureRect = $CollectionFrame
 @onready var collection_topper: Sprite2D = $CollectionTopper
-@onready var status_view: Node = $PetStatusView
-@onready var interaction: Node = $PetInteraction
+@onready var status_view: BattlePetStatusView = $PetStatusView
+@onready var interaction: BattlePetInteraction = $PetInteraction
 
 var pet_data: Dictionary = {}
 var _display_mode := &"none"
@@ -22,7 +22,7 @@ var _display_mode := &"none"
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	interaction.call("configure", self)
+	interaction.configure(self)
 	reset_pet_view()
 
 
@@ -40,8 +40,8 @@ func set_battle_data(data: Dictionary, presentation: Dictionary) -> void:
 	death_mark.texture = presentation.get("death_mark_texture", null) as Texture2D
 	death_mark.position = Vector2(size.x * 0.5, size.y * 0.15)
 	death_mark.scale = Vector2(presentation.get("death_mark_scale", Vector2.ONE))
-	status_view.call("bind_battle_data", pet_data)
-	interaction.call("bind_context", &"battle", String(pet_data.get("team", "")))
+	status_view.bind_battle_data(pet_data)
+	interaction.bind_context(&"battle", String(pet_data.get("team", "")))
 
 
 func set_collection_data(data: Dictionary, presentation: Dictionary) -> void:
@@ -61,7 +61,7 @@ func set_collection_data(data: Dictionary, presentation: Dictionary) -> void:
 	collection_sprite.visible = collection_sprite.texture != null
 	collection_frame.visible = collection_frame.texture != null
 	collection_topper.visible = collection_topper.texture != null
-	interaction.call("bind_context", &"collection", "player")
+	interaction.bind_context(&"collection", "player")
 
 
 func clear_collection_data() -> void:
@@ -88,8 +88,8 @@ func reset_pet_view() -> void:
 	collection_sprite.texture = null
 	collection_frame.texture = null
 	collection_topper.texture = null
-	status_view.call("reset")
-	interaction.call("reset")
+	status_view.reset()
+	interaction.reset()
 
 
 func get_display_mode() -> StringName:
@@ -104,17 +104,17 @@ func get_display_texture() -> Texture2D:
 
 func update_hp(value: int) -> void:
 	pet_data["hp"] = value
-	status_view.call("update_hp", value)
+	status_view.update_hp(value)
 
 
 func update_attack(value: int) -> void:
 	pet_data["attack_damage"] = value
-	status_view.call("update_attack", value)
+	status_view.update_attack(value)
 
 
 func show_health_preview(damage: int, color: Color) -> void:
 	var preview_hp := maxi(0, int(pet_data.get("hp", 0)) - maxi(0, damage))
-	status_view.call("show_hp_preview", preview_hp, color)
+	status_view.show_hp_preview(preview_hp, color)
 
 
 func show_damage_preview(
@@ -122,7 +122,7 @@ func show_damage_preview(
 	color: Color,
 	alignment: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT
 ) -> void:
-	status_view.call("show_damage_preview", maxi(0, damage), damage > 0, color, alignment)
+	status_view.show_damage_preview(maxi(0, damage), damage > 0, color, alignment)
 
 
 func show_death_preview(texture: Texture2D, preview_scale: Vector2) -> void:
@@ -132,7 +132,7 @@ func show_death_preview(texture: Texture2D, preview_scale: Vector2) -> void:
 
 
 func clear_combat_preview() -> void:
-	status_view.call("clear_preview")
+	status_view.clear_preview()
 	death_mark.visible = false
 
 
@@ -141,11 +141,11 @@ func set_visual_tint(color: Color) -> void:
 
 
 func set_selected(selected: bool) -> void:
-	interaction.call("set_selected", selected)
+	interaction.set_selected(selected)
 
 
 func set_dragging(dragging: bool) -> void:
-	interaction.call("set_dragging", dragging)
+	interaction.set_dragging(dragging)
 
 
 func _configure_shadow(presentation: Dictionary) -> void:

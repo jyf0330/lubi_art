@@ -63,6 +63,7 @@ CreatureSlotView（商店 / 队伍 / 背包）
 ├── set_merge_indicator(texture, opacity, visible)
 ├── get_button()
 ├── get_view_model()
+├── get_collection_presentation_snapshot()
 ├── signal pressed(slot)
 ├── signal pointer_entered(slot)
 └── signal pointer_exited(slot)
@@ -151,8 +152,19 @@ CollectionPetView（商店 / 队伍 / 背包 / 拖拽预览）
 └── set_merge_indicator(texture, opacity, visible)
 
 SpriteInfoPanel
-└── display_info(info)
+├── display_info(info)
+├── clear()
+└── 内部预制体
+    ├── SpriteInfoHeaderView.refresh(info, rank, art_textures)
+    ├── SpriteInfoAttackPatternView.refresh(info, art_textures)
+    │   └── SpriteInfoAttackCellView × 21
+    └── SpriteInfoStatTableView.refresh(rank, art_textures)
+        └── SpriteInfoStatRowView × 6
 ```
+
+`SpriteInfoPanel.tscn` 保存完整静态布局，并只通过根脚本向内部预制体分发
+表现数据。外部程序仍只使用 `display_info(info)` / `clear()`，不得直接操作
+Header、AttackPattern、StatTable 或 StatRow 的深层节点。
 
 Controller 不再创建宠物卡片内部的 `TextureRect`、`Sprite2D`、边框和合成箭头。
 

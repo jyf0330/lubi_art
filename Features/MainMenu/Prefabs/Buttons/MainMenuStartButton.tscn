@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Shared/UI/Buttons/FantasyGameButton.gd" id="1_button"]
+
+[node name="StartGameButton" type="Control"]
+custom_minimum_size = Vector2(400, 166)
+mouse_default_cursor_shape = 2
+script = ExtResource("1_button")
+button_text = "开始游戏"

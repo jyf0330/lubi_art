@@ -24,20 +24,23 @@ func _run() -> void:
 	var creature_texture := load(CREATURE_TEXTURE_PATH) as Texture2D
 	middle.call("_set_creature_item_texture", button, creature_texture, SILVER_QUALITY)
 
-	var frame := button.get_node("CreatureFrame") as TextureRect
-	if not frame.size.is_equal_approx(EXPECTED_FRAME_SIZE):
-		push_error("Silver card frame render size is incorrect: %s" % frame.size)
+	var slot := button.get_parent() as CreatureSlotView
+	var presentation := slot.get_collection_presentation_snapshot()
+	var frame_size := Vector2(presentation.get("frame_size", Vector2.ZERO))
+	if not frame_size.is_equal_approx(EXPECTED_FRAME_SIZE):
+		push_error("Silver card frame render size is incorrect: %s" % frame_size)
 		quit(1)
 		return
-	if not frame.position.is_equal_approx(EXPECTED_FRAME_POSITION):
-		push_error("Silver card frame position is incorrect: %s" % frame.position)
+	var frame_position := Vector2(presentation.get("frame_position", Vector2.ZERO))
+	if not frame_position.is_equal_approx(EXPECTED_FRAME_POSITION):
+		push_error("Silver card frame position is incorrect: %s" % frame_position)
 		quit(1)
 		return
 
-	var topper := button.get_node("CreatureTopper") as Sprite2D
 	var expected_scale := EXPECTED_FRAME_SIZE.x / 220.0
-	if not is_equal_approx(topper.scale.x, expected_scale):
-		push_error("Silver card topper scale is incorrect: %s" % topper.scale)
+	var topper_scale := Vector2(presentation.get("topper_scale", Vector2.ZERO))
+	if not is_equal_approx(topper_scale.x, expected_scale):
+		push_error("Silver card topper scale is incorrect: %s" % topper_scale)
 		quit(1)
 		return
 

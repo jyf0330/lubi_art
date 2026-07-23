@@ -6,6 +6,11 @@ const ARTIST_CONTROLLER := "res://Features/ArtistFlow/Controllers/ArtistFlowPrev
 const PREFABS := [
 	"res://Shared/Prefabs/Pet/CollectionPetView.tscn",
 	"res://Shared/Prefabs/Pet/SpriteInfoPanel.tscn",
+	"res://Shared/Prefabs/Pet/SpriteInfo/SpriteInfoHeaderView.tscn",
+	"res://Shared/Prefabs/Pet/SpriteInfo/SpriteInfoAttackPatternView.tscn",
+	"res://Shared/Prefabs/Pet/SpriteInfo/SpriteInfoAttackCellView.tscn",
+	"res://Shared/Prefabs/Pet/SpriteInfo/SpriteInfoStatTableView.tscn",
+	"res://Shared/Prefabs/Pet/SpriteInfo/SpriteInfoStatRowView.tscn",
 	"res://Features/ArtistFlow/Prefabs/Effects/MergeBurstView.tscn",
 	"res://Features/Battle/Prefabs/Board/BattleTextureMarkerView.tscn",
 	"res://Features/Battle/Prefabs/Board/ElementTrapView.tscn",

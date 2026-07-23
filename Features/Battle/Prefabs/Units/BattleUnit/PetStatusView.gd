@@ -1,5 +1,6 @@
 @tool
 extends Node
+class_name BattlePetStatusView
 
 @export var hp_label_path: NodePath
 @export var attack_label_path: NodePath

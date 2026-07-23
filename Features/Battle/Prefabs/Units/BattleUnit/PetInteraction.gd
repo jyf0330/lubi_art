@@ -1,5 +1,6 @@
 @tool
 extends Node
+class_name BattlePetInteraction
 
 var _view: Control = null
 var _context := &"none"

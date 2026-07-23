@@ -1,10 +1,107 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://Shared/Prefabs/Pet/SpriteInfoPanel.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://Shared/Prefabs/Pet/SpriteInfo/SpriteInfoHeaderView.tscn" id="2_header"]
+[ext_resource type="PackedScene" path="res://Shared/Prefabs/Pet/SpriteInfo/SpriteInfoAttackPatternView.tscn" id="3_attack"]
+[ext_resource type="PackedScene" path="res://Shared/Prefabs/Pet/SpriteInfo/SpriteInfoStatTableView.tscn" id="4_stats"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_fallback"]
+bg_color = Color(0.96, 0.87, 0.68, 0.96)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.55, 0.32, 0.18, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxEmpty" id="StyleBox_background"]
 
 [node name="SpriteInfoPanel" type="Control"]
 custom_minimum_size = Vector2(348, 531)
+layout_mode = 3
+anchors_preset = 0
 offset_right = 348.0
 offset_bottom = 531.0
 mouse_filter = 2
+clip_contents = true
 script = ExtResource("1_script")
+
+[node name="FallbackPanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBox_fallback")
+
+[node name="PanelTexture" type="TextureRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 0
+
+[node name="QualityBorderTexture" type="TextureRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 0
+
+[node name="PanelBackground" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+clip_contents = true
+theme_override_styles/panel = SubResource("StyleBox_background")
+
+[node name="ContentMargin" type="MarginContainer" parent="PanelBackground"]
+layout_mode = 2
+mouse_filter = 2
+clip_contents = true
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 3
+
+[node name="Layout" type="VBoxContainer" parent="PanelBackground/ContentMargin"]
+layout_mode = 2
+mouse_filter = 2
+clip_contents = true
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="SpriteInfoHeaderView" parent="PanelBackground/ContentMargin/Layout" instance=ExtResource("2_header")]
+layout_mode = 2
+
+[node name="HeaderDivider" type="ColorRect" parent="PanelBackground/ContentMargin/Layout"]
+custom_minimum_size = Vector2(280, 2)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+color = Color(0.5, 0.31, 0.13, 0.38)
+
+[node name="SpriteInfoAttackPatternView" parent="PanelBackground/ContentMargin/Layout" instance=ExtResource("3_attack")]
+layout_mode = 2
+
+[node name="SpriteInfoStatTableView" parent="PanelBackground/ContentMargin/Layout" instance=ExtResource("4_stats")]
+layout_mode = 2

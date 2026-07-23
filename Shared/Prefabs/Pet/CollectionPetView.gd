@@ -59,6 +59,15 @@ func get_display_texture() -> Texture2D:
 	return creature.texture
 
 
+func get_presentation_snapshot() -> Dictionary:
+	_bind_nodes()
+	return {
+		"frame_position": frame.position,
+		"frame_size": frame.size,
+		"topper_scale": topper.scale,
+	}
+
+
 func set_frame_presentation(
 	texture: Texture2D,
 	frame_position: Vector2,

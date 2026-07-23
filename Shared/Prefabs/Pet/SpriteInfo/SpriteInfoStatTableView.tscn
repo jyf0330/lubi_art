@@ -1,0 +1,101 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://Shared/Prefabs/Pet/SpriteInfo/SpriteInfoStatTableView.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://Shared/Prefabs/Pet/SpriteInfo/SpriteInfoStatRowView.tscn" id="2_row"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_panel"]
+bg_color = Color(0.82, 0.67, 0.42, 0.18)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.55, 0.35, 0.16, 0.36)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="SpriteInfoStatTableView" type="PanelContainer"]
+custom_minimum_size = Vector2(280, 214)
+size_flags_horizontal = 4
+mouse_filter = 2
+clip_contents = true
+theme_override_styles/panel = SubResource("StyleBox_panel")
+script = ExtResource("1_script")
+
+[node name="StatsMargin" type="MarginContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+clip_contents = true
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 3
+
+[node name="StatsRows" type="VBoxContainer" parent="StatsMargin"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+clip_contents = true
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="HpRow" parent="StatsMargin/StatsRows" instance=ExtResource("2_row")]
+layout_mode = 2
+icon_key = "HP"
+display_name = "生命"
+
+[node name="Separator1" type="ColorRect" parent="StatsMargin/StatsRows"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.48, 0.29, 0.12, 0.3)
+
+[node name="ApRow" parent="StatsMargin/StatsRows" instance=ExtResource("2_row")]
+layout_mode = 2
+icon_key = "AP"
+display_name = "行动"
+
+[node name="Separator2" type="ColorRect" parent="StatsMargin/StatsRows"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.48, 0.29, 0.12, 0.3)
+
+[node name="AttackRow" parent="StatsMargin/StatsRows" instance=ExtResource("2_row")]
+layout_mode = 2
+icon_key = "攻击"
+display_name = "攻击"
+
+[node name="Separator3" type="ColorRect" parent="StatsMargin/StatsRows"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.48, 0.29, 0.12, 0.3)
+
+[node name="DefenseRow" parent="StatsMargin/StatsRows" instance=ExtResource("2_row")]
+layout_mode = 2
+icon_key = "防御"
+display_name = "防御"
+
+[node name="Separator4" type="ColorRect" parent="StatsMargin/StatsRows"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.48, 0.29, 0.12, 0.3)
+
+[node name="ShieldRow" parent="StatsMargin/StatsRows" instance=ExtResource("2_row")]
+layout_mode = 2
+icon_key = "护盾"
+display_name = "护盾"
+
+[node name="Separator5" type="ColorRect" parent="StatsMargin/StatsRows"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.48, 0.29, 0.12, 0.3)
+
+[node name="RegenRow" parent="StatsMargin/StatsRows" instance=ExtResource("2_row")]
+layout_mode = 2
+icon_key = "再生"
+display_name = "再生"

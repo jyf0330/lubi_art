@@ -1,0 +1,507 @@
+[gd_scene format=3 uid="uid://bj3vd2kwabuq0"]
+
+; Root-level location scene assembled from reusable prefabs.
+
+[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/UI/Images/背景图.png" id="1_we040"]
+[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/UI/Images/新建项目_235x220.png" id="2_nxvpl"]
+[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/UI/Images/新建项目.png" id="3_dewlx"]
+[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/UI/Images/backpack_ai_220_transparent.png" id="3_wunin"]
+[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/UI/Images/新建项目_1160x490.png" id="4_hfhsn"]
+[ext_resource type="PackedScene" path="res://Features/ArtistFlow/Prefabs/Party/PartySlot.tscn" id="4_qwshj"]
+[ext_resource type="PackedScene" path="res://Features/ArtistFlow/Prefabs/Route/RouteOptionSlot.tscn" id="6_48q88"]
+[ext_resource type="Texture2D" path="res://Shared/Art/Heroes/sun_wukong_ai_220x210.png" id="6_b1goy"]
+[ext_resource type="PackedScene" path="res://Features/ArtistFlow/Prefabs/Shop/ShopSlot.tscn" id="7_xjg7p"]
+[ext_resource type="PackedScene" path="res://Features/ArtistFlow/Prefabs/Inventory/BagSlot.tscn" id="8_mg6lk"]
+[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/UI/Images/screenshot-20260708-154732.png" id="10_j04uc"]
+[ext_resource type="Script" path="res://Features/ArtistFlow/Controllers/ArtistFlowPreviewController.gd" id="11_middle"]
+[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/Debug/Images/Three_Shang.png" id="11_wi7yl"]
+[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/Debug/Images/Bag_Hulu.png" id="14_wi7yl"]
+[ext_resource type="Script" path="res://Features/ArtistFlow/Controllers/ArtistFlowDebugController.gd" id="15_debug"]
+[ext_resource type="Texture2D" path="res://Shared/Art/UI/Economy/UI_GoldCounter_Background.png" id="16_gold_bg"]
+[ext_resource type="Texture2D" path="res://Shared/Art/UI/Economy/UI_GoldCoin_Icon.png" id="17_gold_icon"]
+[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/UI/Images/UI_Images/UI_BagCapacityBar_Empty_190x34.png" id="18_bag_capacity_empty"]
+[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/UI/Images/UI_Images/UI_BagCapacityBean_Highlight_30x24.png" id="19_bag_capacity_bean"]
+[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/Debug/Images/Shop_Neng.png" id="20_shop_neng"]
+[ext_resource type="Texture2D" path="res://Features/Battle/Art/UI/battle_bg/bg3.png" id="21_battle_bg"]
+[ext_resource type="Texture2D" path="res://Features/Battle/Art/UI/battle_interface_frame_2.png" id="22_frame"]
+[ext_resource type="PackedScene" path="res://Shared/Prefabs/HUD/GoldCounter/GoldCounterView.tscn" id="23_gold_counter"]
+[ext_resource type="PackedScene" path="res://Features/ArtistFlow/Prefabs/Inventory/BagLauncherView.tscn" id="24_bag_launcher"]
+[ext_resource type="PackedScene" path="res://Features/ArtistFlow/Prefabs/Party/PartyBarView.tscn" id="25_party_bar"]
+[ext_resource type="PackedScene" path="res://Features/ArtistFlow/Prefabs/Route/RouteOptionsPanelView.tscn" id="26_route_panel"]
+[ext_resource type="PackedScene" path="res://Features/ArtistFlow/Prefabs/Shop/ShopPanelView.tscn" id="27_shop_panel"]
+[ext_resource type="PackedScene" path="res://Features/ArtistFlow/Prefabs/Inventory/InventoryPanelView.tscn" id="28_inventory_panel"]
+[ext_resource type="PackedScene" path="res://Features/ArtistFlow/Prefabs/Navigation/TopActionBarView.tscn" id="29_top_bar"]
+
+[sub_resource type="Animation" id="Animation_j04uc"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MainBG/Containers/Middle/Middle_Three_Option:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(27, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MainBG/Containers/Middle/Middle_Three_Option:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("MainBG/Containers/Middle/Middle_Shop:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(15, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("MainBG/Containers/Middle/Middle_Shop:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("MainBG/Containers/Middle/Middle_Bag:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(12, 0)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("MainBG/Containers/Middle/Middle_Bag:visible")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("MainBG/Containers/Top/Top_Shop:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("MainBG/Containers/Top/Top_Shop:visible")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_b1goy"]
+resource_name = "hide_Shop"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MainBG/Containers/Middle/Middle_Shop:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(2, 2),
+"update": 0,
+"values": [Vector2(15, 0), Vector2(-1607, 20)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MainBG/Containers/Middle/Middle_Shop:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("MainBG/Containers/Top/Top_Shop:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(2, 2),
+"update": 0,
+"values": [Vector2(1046, 112), Vector2(-600, 93)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("MainBG/Containers/Top/Top_Shop:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(2, 2),
+"update": 1,
+"values": [true, false]
+}
+
+[sub_resource type="Animation" id="Animation_vqx31"]
+resource_name = "hide_Three_Option"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MainBG/Containers/Middle/Middle_Three_Option:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(2, 2),
+"update": 0,
+"values": [Vector2(27, 0), Vector2(1595, 76)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MainBG/Containers/Middle/Middle_Three_Option:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+
+[sub_resource type="Animation" id="Animation_wi7yl"]
+resource_name = "hide_bag"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MainBG/Containers/Middle/Middle_Bag:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(2, 2),
+"update": 0,
+"values": [Vector2(12, 0), Vector2(40, 837)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MainBG/Containers/Middle/Middle_Bag:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+
+[sub_resource type="Animation" id="Animation_5q4fb"]
+resource_name = "show_Bag"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MainBG/Containers/Middle/Middle_Bag:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(2, 2),
+"update": 0,
+"values": [Vector2(40, 837), Vector2(12, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MainBG/Containers/Middle/Middle_Bag:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, true]
+}
+
+[sub_resource type="Animation" id="Animation_n04ve"]
+resource_name = "show_Shop"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MainBG/Containers/Middle/Middle_Shop:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(2, 2),
+"update": 0,
+"values": [Vector2(-1607, 20), Vector2(15, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MainBG/Containers/Middle/Middle_Shop:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("MainBG/Containers/Top/Top_Shop:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(-600, 93), Vector2(1046, 112)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("MainBG/Containers/Top/Top_Shop:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1.035265, 1),
+"update": 1,
+"values": [true, true]
+}
+
+[sub_resource type="Animation" id="Animation_wunin"]
+resource_name = "show_Three_Option"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MainBG/Containers/Middle/Middle_Three_Option:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(2, 2),
+"update": 0,
+"values": [Vector2(1595, 76), Vector2(27, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MainBG/Containers/Middle/Middle_Three_Option:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_b1goy"]
+_data = {
+&"RESET": SubResource("Animation_j04uc"),
+&"hide_Shop": SubResource("Animation_b1goy"),
+&"hide_Three_Option": SubResource("Animation_vqx31"),
+&"hide_bag": SubResource("Animation_wi7yl"),
+&"show_Bag": SubResource("Animation_5q4fb"),
+&"show_Shop": SubResource("Animation_n04ve"),
+&"show_Three_Option": SubResource("Animation_wunin")
+}
+
+[node name="UI" type="Control" unique_id=1397941109]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("15_debug")
+
+[node name="MainBG" type="TextureRect" parent="." unique_id=1451240813]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -958.5
+offset_top = -548.0
+offset_right = 961.5
+offset_bottom = 532.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("21_battle_bg")
+
+[node name="BackgroundFrame" type="TextureRect" parent="MainBG"]
+z_index = 5
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+texture = ExtResource("22_frame")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="DebugButton" type="TextureButton" parent="MainBG" unique_id=2122193246]
+visible = false
+layout_mode = 0
+offset_left = 1700.5
+offset_top = 651.0
+offset_right = 1797.5
+offset_bottom = 744.0
+texture_normal = ExtResource("10_j04uc")
+
+[node name="GoldCounter" parent="MainBG" instance=ExtResource("23_gold_counter")]
+offset_left = 1664.0
+offset_top = 32.0
+offset_right = 1874.0
+offset_bottom = 96.0
+
+[node name="Containers" type="NinePatchRect" parent="MainBG" unique_id=1006297414]
+z_index = 10
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -581.5
+offset_top = -487.0
+offset_right = 578.5
+offset_bottom = 443.0
+grow_horizontal = 2
+grow_vertical = 2
+region_rect = Rect2(-5, -9, 493.96057, 537.0495)
+
+[node name="Bags" parent="MainBG/Containers" instance=ExtResource("24_bag_launcher")]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -220.0
+offset_right = 220.0
+grow_vertical = 0
+
+[node name="Party" parent="MainBG/Containers" instance=ExtResource("25_party_bar")]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -940.0
+offset_top = -220.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Middle" type="NinePatchRect" parent="MainBG/Containers" unique_id=843084269]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.23655914
+anchor_right = 0.9982759
+anchor_bottom = 0.76344085
+offset_right = 2.0
+grow_vertical = 2
+texture = ExtResource("4_hfhsn")
+script = ExtResource("11_middle")
+metadata/_edit_use_anchors_ = true
+
+[node name="Middle_Three_Option" parent="MainBG/Containers/Middle" instance=ExtResource("26_route_panel")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -553.0
+offset_top = -245.0
+offset_right = 553.0032
+offset_bottom = 245.0008
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Middle_Shop" parent="MainBG/Containers/Middle" instance=ExtResource("27_shop_panel")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -565.0
+offset_top = -245.0
+offset_right = 565.00146
+offset_bottom = 245.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Middle_Bag" parent="MainBG/Containers/Middle" instance=ExtResource("28_inventory_panel")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -568.0
+offset_top = -245.0
+offset_right = 568.0
+offset_bottom = 244.99976
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Top" parent="MainBG/Containers" instance=ExtResource("29_top_bar")]
+layout_mode = 0
+offset_right = 1160.0
+offset_bottom = 220.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=512767635]
+libraries/ = SubResource("AnimationLibrary_b1goy")

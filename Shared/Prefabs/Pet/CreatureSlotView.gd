@@ -15,7 +15,7 @@ signal pointer_exited(slot: CreatureSlotView)
 
 var _view_model: Dictionary = {}
 var _button: TextureButton
-var _collection_view: Control
+var _collection_view: CollectionPetView
 
 
 func _ready() -> void:
@@ -57,17 +57,24 @@ func set_collection_data(data: Dictionary, presentation: Dictionary) -> void:
 	_bind_button()
 	_ensure_collection_view()
 	_button.texture_normal = null
-	_collection_view.call("setup", presentation)
+	_collection_view.setup(presentation)
 
 
 func clear_collection_data() -> void:
 	_ensure_collection_view()
-	_collection_view.call("clear")
+	_collection_view.clear()
 
 
 func set_merge_indicator(texture: Texture2D, opacity: float, is_visible: bool) -> void:
 	_ensure_collection_view()
-	_collection_view.call("set_merge_indicator", texture, opacity, is_visible)
+	_collection_view.set_merge_indicator(texture, opacity, is_visible)
+
+
+func get_collection_presentation_snapshot() -> Dictionary:
+	_ensure_collection_view()
+	if _collection_view == null:
+		return {}
+	return _collection_view.get_presentation_snapshot()
 
 
 func _bind_button() -> void:
@@ -91,7 +98,7 @@ func _bind_button() -> void:
 func _ensure_collection_view() -> void:
 	if is_instance_valid(_collection_view) or _button == null:
 		return
-	_collection_view = COLLECTION_PET_VIEW_SCENE.instantiate() as Control
+	_collection_view = COLLECTION_PET_VIEW_SCENE.instantiate() as CollectionPetView
 	_collection_view.name = "CollectionPetView"
 	_collection_view.position = Vector2.ZERO
 	_collection_view.size = _button.size if _button.size != Vector2.ZERO else Vector2(220.0, 220.0)

@@ -1,0 +1,87 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://Shared/Prefabs/Pet/SpriteInfo/SpriteInfoHeaderView.gd" id="1_script"]
+[ext_resource type="FontFile" path="res://Shared/Fonts/fusion-pixel-10px-monospaced-zh_hans.ttf" id="2_font"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_transparent"]
+bg_color = Color(1, 1, 1, 0)
+
+[node name="SpriteInfoHeaderView" type="HBoxContainer"]
+custom_minimum_size = Vector2(280, 54)
+size_flags_horizontal = 4
+mouse_filter = 2
+theme_override_constants/separation = 10
+alignment = 1
+script = ExtResource("1_script")
+
+[node name="ElementBadge" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(46, 46)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBox_transparent")
+
+[node name="ElementContent" type="HBoxContainer" parent="ElementBadge"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="ElementIcon" type="TextureRect" parent="ElementBadge/ElementContent"]
+visible = false
+custom_minimum_size = Vector2(46, 46)
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ElementFallbackLabel" type="Label" parent="ElementBadge/ElementContent"]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.18, 0.16, 0.12, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NameLabel" type="Label" parent="."]
+custom_minimum_size = Vector2(84, 54)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.18, 0.16, 0.12, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 29
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
+
+[node name="QualityBadge" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(110, 50)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBox_transparent")
+
+[node name="QualityContent" type="HBoxContainer" parent="QualityBadge"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="QualityIcon" type="TextureRect" parent="QualityBadge/QualityContent"]
+visible = false
+custom_minimum_size = Vector2(110, 50)
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="QualityFallbackLabel" type="Label" parent="QualityBadge/QualityContent"]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.18, 0.16, 0.12, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+vertical_alignment = 1

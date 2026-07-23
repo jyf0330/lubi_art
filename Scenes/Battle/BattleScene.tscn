@@ -1,0 +1,62 @@
+[gd_scene format=3 uid="uid://dvx7sjjdqhia8"]
+
+; Root-level location scene assembled from reusable prefabs.
+
+[ext_resource type="Script" uid="uid://byvuor34eo2xw" path="res://Features/Battle/Controllers/BattleBoardController.gd" id="2_duj8u"]
+[ext_resource type="Texture2D" uid="uid://cvrxdwol2pnc5" path="res://Features/Battle/Art/UI/battle_bg/bg3.png" id="2_vtvof"]
+[ext_resource type="Texture2D" uid="uid://c52svkc6rvej8" path="res://Features/Battle/Art/UI/Buttons/button_auto_deploy.png" id="3_4y1r4"]
+[ext_resource type="Texture2D" uid="uid://cebw8asu4jd0u" path="res://Features/Battle/Art/UI/Buttons/button_start_action.png" id="4_6bry8"]
+[ext_resource type="Texture2D" path="res://Shared/Art/UI/Economy/UI_GoldCounter_Background.png" id="5_gold_bg"]
+[ext_resource type="Texture2D" path="res://Shared/Art/UI/Economy/UI_GoldCoin_Icon.png" id="6_gold_icon"]
+[ext_resource type="Script" uid="uid://5brpkopj43cp" path="res://Features/Battle/Controllers/BattleMainController.gd" id="7_battle_main_scene"]
+[ext_resource type="Texture2D" path="res://Features/Battle/Art/UI/battle_interface_frame_2.png" id="8_frame"]
+[ext_resource type="PackedScene" path="res://Shared/Prefabs/HUD/GoldCounter/GoldCounterView.tscn" id="9_gold_counter"]
+[ext_resource type="PackedScene" path="res://Features/Battle/Prefabs/Board/BattleBoardPanel.tscn" id="10_board"]
+[ext_resource type="PackedScene" path="res://Features/Battle/Prefabs/HUD/BattleActionPanel/BattleActionPanelView.tscn" id="11_actions"]
+
+[node name="BattleMainView" type="Control" unique_id=475582848]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("7_battle_main_scene")
+
+[node name="BoardBG" type="TextureRect" parent="." unique_id=103106544]
+z_index = -30
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+texture = ExtResource("2_vtvof")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="BackgroundFrame" type="TextureRect" parent="." unique_id=1950223798]
+z_index = -20
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+texture = ExtResource("8_frame")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="GoldCounter" parent="." instance=ExtResource("9_gold_counter")]
+offset_left = 1664.0
+offset_top = 32.0
+offset_right = 1874.0
+offset_bottom = 96.0
+
+[node name="BoardGrid" parent="." instance=ExtResource("10_board")]
+offset_left = 400.0
+offset_top = 100.0
+offset_right = 1520.0
+offset_bottom = 101.0
+
+[node name="ActionPanel" parent="." instance=ExtResource("11_actions")]
+offset_left = 1583.0
+offset_top = 717.0
+offset_right = 1850.0
+offset_bottom = 904.0
