@@ -58,6 +58,9 @@ CreatureSlotView（商店 / 队伍 / 背包）
 ├── setup(view_model)
 ├── refresh(view_model)
 ├── clear()
+├── set_collection_data(data, presentation)
+├── clear_collection_data()
+├── set_merge_indicator(texture, opacity, visible)
 ├── get_button()
 ├── get_view_model()
 ├── signal pressed(slot)
@@ -88,6 +91,9 @@ PartyBarView / RouteOptionsPanelView / ShopPanelView / InventoryPanelView
 TopActionBarView
 ├── setup(view_model) / refresh(view_model)
 ├── get_back_button() / get_sell_button()
+├── set_back_panel_state(visible, position)
+├── set_sell_available(available)
+├── contains_sell_point(global_point)
 └── signal back_requested / sell_requested
 ```
 
@@ -105,6 +111,11 @@ BattleUnit
 ├── reset_pet_view()
 ├── update_hp(value)
 ├── update_attack(value)
+├── show_health_preview(damage, color)
+├── show_damage_preview(value, color, alignment)
+├── show_death_preview(texture, preview_scale)
+├── clear_combat_preview()
+├── set_visual_tint(color)
 ├── set_selected(selected)
 ├── set_dragging(dragging)
 ├── get_display_mode()
@@ -118,13 +129,41 @@ PetStatusView
 ├── bind_battle_data(data)
 ├── update_hp(value)
 ├── update_attack(value)
-└── show_damage_preview(value, visible)
+├── show_hp_preview(value, color)
+├── show_damage_preview(value, visible, color, alignment)
+└── clear_preview()
 
 PetInteraction
 ├── bind_context(context, side)
 ├── set_selected(selected)
 ├── set_dragging(dragging)
 └── snapshot()
+```
+
+## 宠物收藏表现
+
+```text
+CollectionPetView（商店 / 队伍 / 背包 / 拖拽预览）
+├── setup(view_model) / refresh(view_model)
+├── clear()
+├── get_display_texture()
+├── set_frame_presentation(frame, topper)
+└── set_merge_indicator(texture, opacity, visible)
+
+SpriteInfoPanel
+└── display_info(info)
+```
+
+Controller 不再创建宠物卡片内部的 `TextureRect`、`Sprite2D`、边框和合成箭头。
+
+## 内部表现预制体
+
+以下组件由所属 Feature Controller 通过场景实例化，不向真实业务层暴露深层节点：
+
+```text
+MergeBurstView         合成爆发效果
+BattleTextureMarkerView 棋盘悬停和行动顺序标记
+ElementTrapView         元素陷阱图标及数值
 ```
 
 ## 战斗特效

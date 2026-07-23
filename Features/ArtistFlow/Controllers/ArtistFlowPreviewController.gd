@@ -5,7 +5,8 @@ signal screen_requested(screen_id: StringName, view_model: Dictionary)
 const DATA_PROVIDER_SCRIPT := preload("res://PreviewData/Providers/GameDataProvider.gd")
 const SESSION_STORE_SCRIPT := preload("res://PreviewData/State/GameSessionStore.gd")
 const CLOCK_INDICATOR_SCENE := preload("res://Features/Battle/Prefabs/HUD/ClockIndicator/ClockIndicator.tscn")
-const PET_UNIT_SCENE := preload("res://Features/Battle/Prefabs/Units/BattleUnit/BattleUnit.tscn")
+const COLLECTION_PET_VIEW_SCENE := preload("res://Shared/Prefabs/Pet/CollectionPetView.tscn")
+const MERGE_BURST_SCENE := preload("res://Features/ArtistFlow/Prefabs/Effects/MergeBurstView.tscn")
 
 const ANIM_SHOW_THREE_OPTION := &"show_Three_Option"
 const ANIM_HIDE_THREE_OPTION := &"hide_Three_Option"
@@ -22,7 +23,7 @@ const OPTION_SHOP := &"shop"
 const OPTION_EVENT := &"event"
 const OPTION_BATTLE := &"battle"
 const SPRITE_INFO_DATABASE_PATH := "res://Shared/Prefabs/Pet/SpriteInfo/SpriteInfoDatabase.tres"
-const SPRITE_INFO_PANEL_SCRIPT_PATH := "res://Shared/Prefabs/Pet/SpriteInfoPanel.gd"
+const SPRITE_INFO_PANEL_SCENE := preload("res://Shared/Prefabs/Pet/SpriteInfoPanel.tscn")
 const SHOP_INFO_PANEL_LEFT_EDGE := 1548.0
 const SHOP_INFO_PANEL_RIGHT_MARGIN := 24.0
 const SHOP_INFO_PANEL_VERTICAL_MARGIN := 64.0
@@ -30,8 +31,6 @@ const SHOP_INFO_PANEL_ASPECT_HEIGHT_RATIO := 1.526
 const THREE_OPTION_SHOP_LOGO_PATH := "res://Features/ArtistFlow/Art/UI/Images/Three_Shop_Logo.png"
 const THREE_OPTION_EVENT_LOGO_PATH := "res://Features/ArtistFlow/Art/UI/Images/Three_Qi_Logo.png"
 const THREE_OPTION_BATTLE_LOGO_PATH := "res://Features/ArtistFlow/Art/UI/Images/Three_Fight_Logo.png"
-const THREE_OPTION_LOGO_SIZE := Vector2(64.0, 83.0)
-const THREE_OPTION_LOGO_EDGE_OVERLAP := 28.0
 const SCREEN_IDS := preload("res://Shared/Navigation/ScreenIds.gd")
 const RETURN_FROM_BATTLE_META := &"returning_from_battle"
 const SHOP_GOLD_CHEAT_REWARD := 100
@@ -67,21 +66,8 @@ const CREATURE_FRAME_TEXTURE_PATHS := {
 }
 const CREATURE_TOPPER_TEXTURE_PATH := "res://Features/ArtistFlow/Art/Frames/Assets/ruby-topper/ruby-topper-1.png"
 const CREATURE_BACKGROUND_TEXTURE_DIR := "res://Features/ArtistFlow/Art/UI/Images/card_backgrounds"
-const CREATURE_BACKGROUND_NODE_NAME := &"CreatureBackground"
-const CREATURE_FRAME_NODE_NAME := &"CreatureFrame"
-const CREATURE_TOPPER_NODE_NAME := &"CreatureTopper"
-const SHARED_PET_VIEW_NODE_NAME := &"SharedPetView"
-const SHARED_PET_VIEW_META := &"uses_shared_pet_prefab"
 const CREATURE_TOPPER_CENTER := Vector2(110.0, 10.0)
 const MERGE_INDICATOR_TEXTURE_PATH := "res://Features/ArtistFlow/Art/UI/Images/Indicators/sprite_merge_upgrade_chevrons_220.png"
-const MERGE_INDICATOR_CLIP_NODE_NAME := &"MergeIndicatorClip"
-const MERGE_INDICATOR_NODE_NAME := &"MergeUpgradeIndicator"
-const MERGE_INDICATOR_FOLLOWER_NODE_NAME := &"MergeUpgradeIndicatorFollower"
-# One full card-height cycle lets an identical second texture enter from below
-# while the first exits above. When the tween wraps, both images occupy exactly
-# the same pixels as before, so the infinite loop has no visible jump.
-const MERGE_INDICATOR_TRAVEL_PX := CREATURE_SLOT_SIZE.y
-const MERGE_INDICATOR_LOOP_DURATION := 1.15
 const MERGE_ANIMATION_BURST_TEXTURE_PATH := "res://Features/ArtistFlow/Art/UI/Images/Effects/merge_upgrade_burst.png"
 const MERGE_ANIMATION_ROOT_NAME := &"MergeAnimationOverlay"
 const MERGE_ANIMATION_SOURCE_NAME := &"MergeSourceCard"
@@ -97,8 +83,6 @@ const DRAG_SOURCE_BAG := &"bag"
 const CLOCK_POSITION := Vector2(22.0, 519.0)
 const CLOCK_SIZE := 155.0
 const CLOCK_HOURS_PER_DAY := 6
-const BAG_BUTTON_POSITION := Vector2(0.0, 52.0)
-const BAG_BUTTON_SIZE := Vector2(220.0, 168.0)
 
 # Keep the upgrade prompt clearly visible over both light and dark creature art.
 # It can still be tuned in the Inspector or through
@@ -107,14 +91,12 @@ const BAG_BUTTON_SIZE := Vector2(220.0, 168.0)
 @export_range(0.4, 1.5, 0.05) var merge_animation_duration := 0.8
 
 @onready var animation_player: AnimationPlayer = $"../../../AnimationPlayer"
-@onready var middle_three_option: GridContainer = $Middle_Three_Option
-@onready var middle_shop: GridContainer = $Middle_Shop
-@onready var middle_bag: GridContainer = $Middle_Bag
-@onready var party_container: GridContainer = $"../Party/Party_Container"
-@onready var top_shop: GridContainer = $"../Top/Top_Shop"
-@onready var top_sell_button: Button = $"../Top/Top_Sell"
-@onready var shop_back_button: TextureButton = $"../Top/Top_Shop/Shop_BackButton"
-@onready var bag_button: TextureButton = $"../Bags/Bag_Button"
+@onready var middle_three_option: RouteOptionsPanelView = $Middle_Three_Option
+@onready var middle_shop: ShopPanelView = $Middle_Shop
+@onready var middle_bag: InventoryPanelView = $Middle_Bag
+@onready var party_bar: PartyBarView = $"../Party"
+@onready var top_action_bar: TopActionBarView = $"../Top"
+@onready var bag_launcher: BagLauncherView = $"../Bags"
 @onready var gold_counter: GoldCounterView = $"../../GoldCounter"
 
 var _is_transitioning := false
@@ -136,7 +118,6 @@ var _bag_buttons: Array[TextureButton] = []
 var _bag_slots: Array[Control] = []
 var _bag_items: Array = []
 var _bag_item_qualities: Array[StringName] = []
-var _bag_capacity_beans: Array[TextureRect] = []
 var _drag_candidate_source := DRAG_SOURCE_NONE
 var _drag_candidate_index := -1
 var _drag_candidate_start := Vector2.ZERO
@@ -153,8 +134,7 @@ var _merge_hidden_controls: Dictionary = {}
 var _merge_animation_is_playing := false
 var _merge_animations_enabled := false
 var _three_option_buttons: Array[TextureButton] = []
-var _three_option_logos: Array[TextureRect] = []
-var _three_option_kinds: Array[StringName] = []
+var _three_option_slots: Array[Control] = []
 var _clock_root: Node2D = null
 var _clock_total_hours := 0
 var _clock_hour := 0
@@ -181,13 +161,12 @@ func _ready() -> void:
 		_reset_gold_state()
 		_reset_clock_state()
 	_update_gold_display()
-	_prepare_clock_indicator()
-	_shop_item_textures = _load_textures_from_folder(_shop_path("creature_catalog_dir", "res://Features/ArtistFlow/Art/Pets/Sprites"))
+	_prepare_clock_indicator.call_deferred()
+	_shop_item_textures = _load_textures_from_folder(_shop_path("creature_catalog_dir", "res://Shared/Art/Pets/Sprites"))
 	_load_sprite_info_database()
-	_create_shop_info_panel()
+	_create_shop_info_panel.call_deferred()
 	_prepare_three_option_buttons()
 	_prepare_buttons()
-	_prepare_sell_button()
 	_prepare_shop_buttons()
 	_prepare_storage_slots()
 	if is_returning_from_battle:
@@ -355,65 +334,41 @@ func _refresh_shop_affordability() -> void:
 func _prepare_three_option_buttons() -> void:
 	var boss_image_dir := _shop_path("shop_boss_image_dir", "res://Features/ArtistFlow/Art/Shop/Bosses")
 	var boss_textures := _load_textures_from_folder(boss_image_dir)
-	_three_option_buttons = _get_buttons_from_slots(_get_direct_control_children(middle_three_option))
-	_three_option_logos.clear()
-	_three_option_kinds.clear()
+	_three_option_slots = middle_three_option.get_slots()
+	_three_option_buttons = _get_buttons_from_slots(_three_option_slots)
 
 	if boss_textures.size() < _three_option_buttons.size():
 		push_warning("Not enough boss images in %s" % boss_image_dir)
 
-	for index in _three_option_buttons.size():
+	for index in _three_option_slots.size():
+		var slot := _three_option_slots[index]
 		var button := _three_option_buttons[index]
 		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-
-		if index < boss_textures.size():
-			button.texture_normal = boss_textures[index]
-
-		var pressed_callable := _on_three_option_button_pressed.bind(index)
-		if not button.pressed.is_connected(pressed_callable):
-			button.pressed.connect(pressed_callable)
-
-		_three_option_logos.append(_create_three_option_logo(index))
-		_three_option_kinds.append(OPTION_SHOP)
+		if slot.has_signal("option_requested") \
+			and not slot.is_connected("option_requested", _on_three_option_requested):
+			slot.connect("option_requested", _on_three_option_requested)
+		if slot.has_method("setup"):
+			slot.call("setup", {
+				"kind": OPTION_SHOP,
+				"texture": boss_textures[index] if index < boss_textures.size() else null,
+				"logo": _load_three_option_logo(OPTION_SHOP),
+			})
 
 	_refresh_three_options()
-
-
-func _create_three_option_logo(index: int) -> TextureRect:
-	var main_bg := get_node_or_null("../..") as Control
-	var logo := TextureRect.new()
-	logo.name = "ThreeOptionLogo%d" % (index + 1)
-	logo.size = THREE_OPTION_LOGO_SIZE
-	logo.custom_minimum_size = THREE_OPTION_LOGO_SIZE
-	logo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	logo.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	logo.z_index = 100
-	logo.visible = false
-
-	if main_bg != null:
-		main_bg.add_child.call_deferred(logo)
-	else:
-		add_child.call_deferred(logo)
-
-	return logo
 
 
 func _refresh_three_options() -> void:
 	var option_kinds := _build_three_option_kinds_for_hour(_clock_hour)
 
-	for index in _three_option_buttons.size():
+	for index in _three_option_slots.size():
 		if index >= option_kinds.size():
 			continue
 
 		var kind: StringName = option_kinds[index]
-		_three_option_kinds[index] = kind
-
-		if index < _three_option_logos.size():
-			_three_option_logos[index].texture = _load_three_option_logo(kind)
-
-	_update_three_option_logo_positions()
+		var slot := _three_option_slots[index]
+		if slot.has_method("refresh"):
+			slot.call("refresh", {"kind": kind, "logo": _load_three_option_logo(kind)})
 
 
 func _build_three_option_kinds_for_hour(hour: int) -> Array[StringName]:
@@ -438,44 +393,15 @@ func _load_three_option_logo(kind: StringName) -> Texture2D:
 			return load(THREE_OPTION_SHOP_LOGO_PATH) as Texture2D
 
 
-func _process(_delta: float) -> void:
-	_update_three_option_logo_positions()
-
-
-func _update_three_option_logo_positions() -> void:
-	for index in _three_option_logos.size():
-		var logo := _three_option_logos[index]
-		var has_button := index < _three_option_buttons.size() and _three_option_buttons[index] != null
-		logo.visible = has_button and middle_three_option.visible
-
-		if not logo.visible:
-			continue
-
-		var button := _three_option_buttons[index]
-		var button_rect := button.get_global_rect()
-		logo.global_position = Vector2(
-			button_rect.get_center().x - logo.size.x * 0.5,
-			button_rect.end.y - THREE_OPTION_LOGO_EDGE_OVERLAP
-		)
-
-
 func _prepare_buttons() -> void:
-	_configure_bag_button()
-	shop_back_button.pressed.connect(_on_shop_back_button_pressed)
-	bag_button.pressed.connect(_on_bag_button_pressed)
-
-
-func _configure_bag_button() -> void:
-	bag_button.position = BAG_BUTTON_POSITION
-	bag_button.size = BAG_BUTTON_SIZE
-	bag_button.custom_minimum_size = BAG_BUTTON_SIZE
-	bag_button.ignore_texture_size = true
-	bag_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-	bag_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	if not top_action_bar.back_requested.is_connected(_on_shop_back_button_pressed):
+		top_action_bar.back_requested.connect(_on_shop_back_button_pressed)
+	if not bag_launcher.bag_requested.is_connected(_on_bag_button_pressed):
+		bag_launcher.bag_requested.connect(_on_bag_button_pressed)
 
 
 func _prepare_shop_buttons() -> void:
-	_shop_slots = _get_direct_control_children(middle_shop)
+	_shop_slots = middle_shop.get_slots()
 	_shop_buttons = _get_buttons_from_slots(_shop_slots)
 	_shop_items.clear()
 	_shop_item_qualities.clear()
@@ -495,7 +421,7 @@ func _prepare_shop_buttons() -> void:
 
 
 func _prepare_storage_slots() -> void:
-	_party_slots = _get_direct_control_children(party_container)
+	_party_slots = party_bar.get_slots()
 	_party_buttons = _get_buttons_from_slots(_party_slots)
 	_party_items.clear()
 	_party_item_qualities.clear()
@@ -511,7 +437,7 @@ func _prepare_storage_slots() -> void:
 		if not _party_buttons[index].mouse_exited.is_connected(_on_party_button_mouse_exited):
 			_party_buttons[index].mouse_exited.connect(_on_party_button_mouse_exited.bind(index))
 
-	_bag_slots = _get_direct_control_children(middle_bag)
+	_bag_slots = middle_bag.get_slots()
 	_bag_buttons = _get_buttons_from_slots(_bag_slots)
 	_bag_items.clear()
 	_bag_item_qualities.clear()
@@ -529,31 +455,16 @@ func _prepare_storage_slots() -> void:
 
 
 func _prepare_bag_capacity_bar() -> void:
-	_bag_capacity_beans.clear()
-	var ability_bar := get_node_or_null("../Bags/AbilityBar")
-	if ability_bar == null:
-		return
-
-	for child in ability_bar.get_children():
-		if child is TextureRect and child.name.begins_with("Bean"):
-			var bean := child as TextureRect
-			bean.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			_bag_capacity_beans.append(bean)
-
 	_refresh_bag_capacity_bar()
 
 
 func _refresh_bag_capacity_bar() -> void:
-	if _bag_capacity_beans.is_empty():
-		return
-
 	var filled_count := 0
 	for item in _bag_items:
 		if item != null:
 			filled_count += 1
 
-	for index in _bag_capacity_beans.size():
-		_bag_capacity_beans[index].visible = index < filled_count
+	bag_launcher.set_capacity(filled_count)
 
 
 func _configure_inventory_button(button: TextureButton) -> void:
@@ -568,21 +479,9 @@ func _configure_inventory_button(button: TextureButton) -> void:
 	button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
-	button.set_meta(SHARED_PET_VIEW_META, true)
-	_ensure_shared_pet_view(button).call("clear_collection_data")
-
-
-func _ensure_shared_pet_view(button: TextureButton) -> Control:
-	var pet_view := button.get_node_or_null(NodePath(SHARED_PET_VIEW_NODE_NAME)) as Control
-	if pet_view != null:
-		return pet_view
-	pet_view = PET_UNIT_SCENE.instantiate() as Control
-	pet_view.name = SHARED_PET_VIEW_NODE_NAME
-	pet_view.position = Vector2.ZERO
-	pet_view.size = CREATURE_SLOT_SIZE
-	pet_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	button.add_child(pet_view)
-	return pet_view
+	var slot := _get_creature_slot(button)
+	if slot != null:
+		slot.clear_collection_data()
 
 
 func _configure_creature_button(button: TextureButton) -> void:
@@ -593,117 +492,9 @@ func _configure_creature_button(button: TextureButton) -> void:
 	button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
-	_ensure_creature_background(button)
-	_ensure_creature_frame(button)
-	_ensure_creature_topper(button)
-
-
-func _ensure_creature_background(button: TextureButton) -> void:
-	var background := button.get_node_or_null(NodePath(CREATURE_BACKGROUND_NODE_NAME)) as TextureRect
-	if background == null:
-		background = TextureRect.new()
-		background.name = CREATURE_BACKGROUND_NODE_NAME
-		background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		background.stretch_mode = TextureRect.STRETCH_SCALE
-		background.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		background.show_behind_parent = true
-		button.add_child(background)
-
-	background.visible = button.texture_normal != null
-
-
-func _ensure_creature_frame(button: TextureButton) -> void:
-	var frame := button.get_node_or_null(NodePath(CREATURE_FRAME_NODE_NAME)) as TextureRect
-	if frame == null:
-		frame = TextureRect.new()
-		frame.name = CREATURE_FRAME_NODE_NAME
-		frame.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		frame.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		frame.z_index = 1
-		button.add_child(frame)
-
-	frame.texture = _get_creature_frame_texture(CREATURE_QUALITY_BRONZE)
-	_layout_creature_frame(frame, CREATURE_QUALITY_BRONZE)
-	frame.visible = button.texture_normal != null
-
-
-func _ensure_creature_topper(button: TextureButton) -> void:
-	var topper := button.get_node_or_null(NodePath(CREATURE_TOPPER_NODE_NAME)) as Sprite2D
-	if topper == null:
-		topper = Sprite2D.new()
-		topper.name = CREATURE_TOPPER_NODE_NAME
-		topper.centered = true
-		topper.z_index = 2
-		button.add_child(topper)
-
-	# The gem is scaled with the frame, centered horizontally, and placed in the
-	# vertical middle of the card's top border rather than above it.
-	topper.position = CREATURE_TOPPER_CENTER
-	topper.scale = Vector2.ONE * (CREATURE_FRAME_RENDER_SIZE.x / CREATURE_SLOT_SIZE.x)
-	topper.texture = _get_creature_topper_texture()
-	topper.visible = button.texture_normal != null
-
-
-func _ensure_merge_indicator(button: TextureButton) -> TextureRect:
-	var clip := button.get_node_or_null(NodePath(MERGE_INDICATOR_CLIP_NODE_NAME)) as Control
-	if clip == null:
-		clip = Control.new()
-		clip.name = MERGE_INDICATOR_CLIP_NODE_NAME
-		clip.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		clip.clip_contents = true
-		clip.z_index = 3
-		button.add_child(clip)
-
-	var indicator := clip.get_node_or_null(NodePath(MERGE_INDICATOR_NODE_NAME)) as TextureRect
-	if indicator == null:
-		indicator = TextureRect.new()
-		indicator.name = MERGE_INDICATOR_NODE_NAME
-		indicator.size = CREATURE_SLOT_SIZE
-		indicator.texture = _get_merge_indicator_texture()
-		indicator.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		indicator.stretch_mode = TextureRect.STRETCH_SCALE
-		indicator.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		clip.add_child(indicator)
-
-	var follower := indicator.get_node_or_null(
-		NodePath(MERGE_INDICATOR_FOLLOWER_NODE_NAME)
-	) as TextureRect
-	if follower == null:
-		follower = TextureRect.new()
-		follower.name = MERGE_INDICATOR_FOLLOWER_NODE_NAME
-		follower.position = Vector2(0.0, MERGE_INDICATOR_TRAVEL_PX)
-		follower.size = CREATURE_SLOT_SIZE
-		follower.texture = _get_merge_indicator_texture()
-		follower.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		follower.stretch_mode = TextureRect.STRETCH_SCALE
-		follower.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		indicator.add_child(follower)
-
-	if not indicator.has_meta("merge_animation_started"):
-		indicator.set_meta("merge_animation_started", true)
-		_start_merge_indicator_animation(indicator)
-
-	indicator.modulate = Color(1.0, 1.0, 1.0, merge_indicator_opacity)
-	return indicator
-
-
-func _start_merge_indicator_animation(indicator: TextureRect) -> void:
-	indicator.position = Vector2.ZERO
-	var tween := indicator.create_tween()
-	tween.set_trans(Tween.TRANS_LINEAR)
-	tween.set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(
-		indicator,
-		"position:y",
-		-MERGE_INDICATOR_TRAVEL_PX,
-		MERGE_INDICATOR_LOOP_DURATION
-	).from(0.0)
-	# Explicitly restoring the start value matters for a property tweener: without
-	# it, later iterations start at the previous target and appear stationary.
-	tween.set_loops()
+	var slot := _get_creature_slot(button)
+	if slot != null:
+		slot.clear_collection_data()
 
 
 func _get_merge_indicator_texture() -> Texture2D:
@@ -764,14 +555,17 @@ func _refresh_merge_indicators_for_cards(
 	var count: int = min(buttons.size(), items.size())
 	for index in count:
 		var item_texture: Texture2D = items[index] as Texture2D
-		var indicator: TextureRect = _ensure_merge_indicator(buttons[index])
 		var quality := _get_quality_at(qualities, index)
 		var is_mergeable: bool = item_texture != null \
 			and _get_next_creature_quality(quality) != StringName() \
 			and int(matching_item_counts.get(
 				_get_merge_creature_key(item_texture, quality), 0
 			)) > 0
-		indicator.visible = is_mergeable
+		var slot := _get_creature_slot(buttons[index])
+		if slot != null:
+			slot.set_merge_indicator(
+				_get_merge_indicator_texture(), merge_indicator_opacity, is_mergeable
+			)
 
 
 func _get_quality_at(qualities: Array[StringName], index: int) -> StringName:
@@ -803,12 +597,6 @@ func _get_creature_frame_render_size(quality: StringName) -> Vector2:
 		return CREATURE_SILVER_FRAME_RENDER_SIZE
 
 	return CREATURE_FRAME_RENDER_SIZE
-
-
-func _layout_creature_frame(frame: TextureRect, quality: StringName) -> void:
-	var render_size := _get_creature_frame_render_size(quality)
-	frame.position = (CREATURE_SLOT_SIZE - render_size) * 0.5
-	frame.size = render_size
 
 
 func _get_creature_topper_texture() -> Texture2D:
@@ -923,17 +711,17 @@ func _play_merge_animation(merge_event: Dictionary) -> void:
 	source_card.rotation = deg_to_rad(2.0)
 	target_card.rotation = deg_to_rad(-2.0)
 
-	var burst := TextureRect.new()
+	var burst := MERGE_BURST_SCENE.instantiate() as TextureRect
+	if burst == null:
+		overlay.queue_free()
+		return
 	burst.name = MERGE_ANIMATION_BURST_NAME
-	burst.texture = _get_merge_animation_burst_texture()
-	burst.size = Vector2(360.0, 360.0)
-	burst.pivot_offset = burst.size * 0.5
+	burst.call("setup", {
+		"texture": _get_merge_animation_burst_texture(),
+		"size": Vector2(360.0, 360.0),
+		"initial_scale": 0.18,
+	})
 	burst.global_position = merge_center - burst.size * 0.5
-	burst.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	burst.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	burst.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	burst.modulate = Color(1.0, 1.0, 1.0, 0.0)
-	burst.scale = Vector2.ONE * 0.18
 	overlay.add_child(burst)
 	burst.move_to_front()
 
@@ -998,56 +786,37 @@ func _play_merge_animation(merge_event: Dictionary) -> void:
 
 
 func _create_merge_animation_card(item_texture: Texture2D, quality: StringName) -> Control:
-	var card := Control.new()
-	card.size = CREATURE_SLOT_SIZE
+	var card := COLLECTION_PET_VIEW_SCENE.instantiate() as Control
+	if card == null:
+		return null
+	var frame_render_size := _get_creature_frame_render_size(quality)
+	card.call("setup", {
+		"slot_size": CREATURE_SLOT_SIZE,
+		"background_texture": _get_creature_background_texture(item_texture),
+		"sprite_texture": item_texture,
+		"frame_texture": _get_creature_frame_texture(quality),
+		"frame_position": (CREATURE_SLOT_SIZE - frame_render_size) * 0.5,
+		"frame_size": frame_render_size,
+		"topper_texture": _get_creature_topper_texture(),
+		"topper_position": CREATURE_TOPPER_CENTER,
+		"topper_scale": Vector2.ONE * (frame_render_size.x / CREATURE_SLOT_SIZE.x),
+	})
 	card.pivot_offset = CREATURE_SLOT_SIZE * 0.5
 	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-	var background := TextureRect.new()
-	background.texture = _get_creature_background_texture(item_texture)
-	background.size = CREATURE_SLOT_SIZE
-	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	background.stretch_mode = TextureRect.STRETCH_SCALE
-	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(background)
-
-	var creature := TextureRect.new()
-	creature.texture = item_texture
-	creature.size = CREATURE_SLOT_SIZE
-	creature.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	creature.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	creature.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(creature)
-
-	var frame := TextureRect.new()
-	frame.name = CREATURE_FRAME_NODE_NAME
-	frame.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	frame.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	frame.z_index = 1
-	card.add_child(frame)
-
-	var topper := Sprite2D.new()
-	topper.name = CREATURE_TOPPER_NODE_NAME
-	topper.texture = _get_creature_topper_texture()
-	topper.position = CREATURE_TOPPER_CENTER
-	topper.z_index = 2
-	card.add_child(topper)
-	_set_merge_animation_card_quality(card, quality)
 	return card
 
 
 func _set_merge_animation_card_quality(card: Control, quality: StringName) -> void:
 	if card == null:
 		return
-	var frame := card.get_node_or_null(NodePath(CREATURE_FRAME_NODE_NAME)) as TextureRect
-	if frame != null:
-		frame.texture = _get_creature_frame_texture(quality)
-		_layout_creature_frame(frame, quality)
-	var topper := card.get_node_or_null(NodePath(CREATURE_TOPPER_NODE_NAME)) as Sprite2D
-	if topper != null:
-		var render_size := _get_creature_frame_render_size(quality)
-		topper.scale = Vector2.ONE * (render_size.x / CREATURE_SLOT_SIZE.x)
+	var render_size := _get_creature_frame_render_size(quality)
+	card.call(
+		"set_frame_presentation",
+		_get_creature_frame_texture(quality),
+		(CREATURE_SLOT_SIZE - render_size) * 0.5,
+		render_size,
+		Vector2.ONE * (render_size.x / CREATURE_SLOT_SIZE.x)
+	)
 
 
 func _get_merge_animation_burst_texture() -> Texture2D:
@@ -1101,49 +870,40 @@ func _set_creature_item_texture(
 	item_texture: Texture2D,
 	quality: StringName = CREATURE_QUALITY_BRONZE
 ) -> void:
-	if bool(button.get_meta(SHARED_PET_VIEW_META, false)):
-		button.texture_normal = null
-		var pet_view := _ensure_shared_pet_view(button)
-		if item_texture == null:
-			pet_view.call("clear_collection_data")
-		else:
-			var frame_render_size := _get_creature_frame_render_size(quality)
-			pet_view.call("set_collection_data", {
-				"texture_path": item_texture.resource_path,
-				"quality": String(quality),
-			}, {
-				"slot_size": CREATURE_SLOT_SIZE,
-				"background_texture": _get_creature_background_texture(item_texture),
-				"sprite_texture": item_texture,
-				"frame_texture": _get_creature_frame_texture(quality),
-				"frame_position": (CREATURE_SLOT_SIZE - frame_render_size) * 0.5,
-				"frame_size": frame_render_size,
-				"topper_texture": _get_creature_topper_texture(),
-				"topper_position": CREATURE_TOPPER_CENTER,
-				"topper_scale": Vector2.ONE * (frame_render_size.x / CREATURE_SLOT_SIZE.x),
-			})
-		_refresh_merge_indicators()
+	var slot := _get_creature_slot(button)
+	if slot == null:
+		push_warning("Creature button is not owned by CreatureSlotView: %s" % button.get_path())
 		return
-	button.texture_normal = item_texture
-	button.set_meta("creature_quality", quality)
-	var background := button.get_node_or_null(NodePath(CREATURE_BACKGROUND_NODE_NAME)) as TextureRect
-	if background != null:
-		background.texture = _get_creature_background_texture(item_texture)
-		background.visible = item_texture != null
-
-	var frame := button.get_node_or_null(NodePath(CREATURE_FRAME_NODE_NAME)) as TextureRect
-	if frame != null:
-		frame.texture = _get_creature_frame_texture(quality)
-		_layout_creature_frame(frame, quality)
-		frame.visible = item_texture != null
-
-	var topper := button.get_node_or_null(NodePath(CREATURE_TOPPER_NODE_NAME)) as Sprite2D
-	if topper != null:
+	button.texture_normal = null
+	if item_texture == null:
+		slot.clear_collection_data()
+	else:
 		var frame_render_size := _get_creature_frame_render_size(quality)
-		topper.scale = Vector2.ONE * (frame_render_size.x / CREATURE_SLOT_SIZE.x)
-		topper.visible = item_texture != null
+		slot.set_collection_data({
+			"texture_path": item_texture.resource_path,
+			"quality": String(quality),
+		}, {
+			"slot_size": CREATURE_SLOT_SIZE,
+			"background_texture": _get_creature_background_texture(item_texture),
+			"sprite_texture": item_texture,
+			"frame_texture": _get_creature_frame_texture(quality),
+			"frame_position": (CREATURE_SLOT_SIZE - frame_render_size) * 0.5,
+			"frame_size": frame_render_size,
+			"topper_texture": _get_creature_topper_texture(),
+			"topper_position": CREATURE_TOPPER_CENTER,
+			"topper_scale": Vector2.ONE * (frame_render_size.x / CREATURE_SLOT_SIZE.x),
+		})
 
 	_refresh_merge_indicators()
+
+
+func _get_creature_slot(button: TextureButton) -> CreatureSlotView:
+	var current: Node = button
+	while current != null and current != self:
+		if current is CreatureSlotView:
+			return current as CreatureSlotView
+		current = current.get_parent()
+	return null
 
 
 func _get_creature_background_texture(item_texture: Texture2D) -> Texture2D:
@@ -1191,26 +951,6 @@ func _file_name_has_any(file_name: String, keywords: Array[String]) -> bool:
 	return false
 
 
-func _prepare_sell_button() -> void:
-	top_sell_button.visible = false
-	top_sell_button.text = "\u51fa\u552e"
-	top_sell_button.focus_mode = Control.FOCUS_NONE
-	top_sell_button.mouse_filter = Control.MOUSE_FILTER_STOP
-	top_sell_button.z_index = 200
-	top_sell_button.add_theme_font_size_override("font_size", 48)
-	top_sell_button.add_theme_color_override("font_color", Color(1.0, 0.9, 0.9, 1.0))
-	top_sell_button.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 1.0, 1.0))
-	top_sell_button.add_theme_color_override("font_pressed_color", Color(1.0, 0.82, 0.82, 1.0))
-
-	var normal_style := _make_sell_button_style(Color(0.85, 0.04, 0.04, 0.36), Color(1.0, 0.0, 0.0, 0.95))
-	var hover_style := _make_sell_button_style(Color(0.95, 0.04, 0.04, 0.46), Color(1.0, 0.16, 0.16, 1.0))
-	var pressed_style := _make_sell_button_style(Color(0.62, 0.0, 0.0, 0.54), Color(1.0, 0.08, 0.08, 1.0))
-	top_sell_button.add_theme_stylebox_override("normal", normal_style)
-	top_sell_button.add_theme_stylebox_override("hover", hover_style)
-	top_sell_button.add_theme_stylebox_override("pressed", pressed_style)
-	top_sell_button.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
-
-
 func _prepare_clock_indicator() -> void:
 	var main_bg := get_node_or_null("../..") as Control
 	if main_bg == null:
@@ -1223,7 +963,7 @@ func _prepare_clock_indicator() -> void:
 		return
 	_clock_root.position = CLOCK_POSITION
 	_clock_root.z_index = 20
-	main_bg.add_child.call_deferred(_clock_root)
+	main_bg.add_child(_clock_root)
 	_clock_root.call("setup", _clock_total_hours, CLOCK_SIZE, false)
 
 
@@ -1245,14 +985,6 @@ func _update_clock_display(animate_pointer: bool) -> void:
 	_clock_root.call("set_total_hours", _clock_total_hours, animate_pointer)
 
 
-func _make_sell_button_style(bg_color: Color, border_color: Color) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = bg_color
-	style.border_color = border_color
-	style.set_border_width_all(5)
-	return style
-
-
 func _show_initial_three_option() -> void:
 	_is_transitioning = true
 	_set_initial_state()
@@ -1271,18 +1003,13 @@ func _set_initial_state() -> void:
 	middle_bag.visible = false
 	middle_bag.position = Vector2(40.0, 837.0)
 
-	top_shop.visible = false
-	top_shop.position = Vector2(-600.0, 93.0)
+	top_action_bar.set_back_panel_state(false, Vector2(-600.0, 93.0))
 	_is_transitioning = false
 
 
-func _on_three_option_button_pressed(option_index: int = -1) -> void:
+func _on_three_option_requested(option_kind: StringName) -> void:
 	if _is_transitioning:
 		return
-
-	var option_kind := OPTION_SHOP
-	if option_index >= 0 and option_index < _three_option_kinds.size():
-		option_kind = _three_option_kinds[option_index]
 
 	match option_kind:
 		OPTION_BATTLE:
@@ -1697,7 +1424,7 @@ func _drop_dragged_shop_item(mouse_position: Vector2) -> void:
 		_purchase_shop_item(_drag_candidate_index, TARGET_PARTY, party_index)
 		return
 
-	if _is_point_inside_control(bag_button, mouse_position):
+	if bag_launcher.contains_global_point(mouse_position):
 		_purchase_shop_item(_drag_candidate_index, TARGET_BAG)
 		return
 
@@ -1740,54 +1467,24 @@ func _create_drag_preview(
 	item_texture: Texture2D,
 	quality: StringName = CREATURE_QUALITY_BRONZE
 ) -> void:
-	_drag_preview = Control.new()
-	# Make the dragged card use the same 220 x 220 content area as the cards in
-	# the shop and inventory. The frame intentionally extends 20 px past this
-	# area on each side, but the background and creature never do.
-	_drag_preview.size = CREATURE_SLOT_SIZE
+	_drag_preview = COLLECTION_PET_VIEW_SCENE.instantiate() as Control
+	if _drag_preview == null:
+		return
+	var frame_render_size := _get_creature_frame_render_size(quality)
+	_drag_preview.call("setup", {
+		"slot_size": CREATURE_SLOT_SIZE,
+		"background_texture": _get_creature_background_texture(item_texture),
+		"sprite_texture": item_texture,
+		"frame_texture": _get_creature_frame_texture(quality),
+		"frame_position": (CREATURE_SLOT_SIZE - frame_render_size) * 0.5,
+		"frame_size": frame_render_size,
+		"topper_texture": _get_creature_topper_texture(),
+		"topper_position": CREATURE_TOPPER_CENTER,
+		"topper_scale": Vector2.ONE * (frame_render_size.x / CREATURE_SLOT_SIZE.x),
+	})
 	_drag_preview.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_drag_preview.modulate = Color(1.0, 1.0, 1.0, 0.82)
 	_drag_preview.z_index = 100
-
-	var background := TextureRect.new()
-	background.texture = _get_creature_background_texture(item_texture)
-	background.size = CREATURE_SLOT_SIZE
-	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	background.stretch_mode = TextureRect.STRETCH_SCALE
-	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_drag_preview.add_child(background)
-
-	var creature := TextureRect.new()
-	creature.texture = item_texture
-	creature.size = CREATURE_SLOT_SIZE
-	creature.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	creature.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	creature.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_drag_preview.add_child(creature)
-
-	var frame_texture := _get_creature_frame_texture(quality)
-	if frame_texture != null:
-		var frame := Sprite2D.new()
-		frame.texture = frame_texture
-		frame.position = CREATURE_SLOT_SIZE * 0.5
-		var frame_render_size := _get_creature_frame_render_size(quality)
-		var frame_scale := frame_render_size.x / float(frame_texture.get_width())
-		frame.scale = Vector2.ONE * frame_scale
-		frame.z_index = 1
-		_drag_preview.add_child(frame)
-
-	var topper_texture := _get_creature_topper_texture()
-	if topper_texture != null:
-		var topper := Sprite2D.new()
-		topper.texture = topper_texture
-		topper.position = CREATURE_TOPPER_CENTER
-		var frame_render_size := _get_creature_frame_render_size(quality)
-		topper.scale = Vector2.ONE * (frame_render_size.x / CREATURE_SLOT_SIZE.x)
-		topper.z_index = 2
-		_drag_preview.add_child(topper)
-
-	# Keep the preview in the UI canvas so it inherits exactly the same viewport
-	# transform as the cards being dragged.
 	get_tree().current_scene.add_child(_drag_preview)
 
 
@@ -1802,7 +1499,7 @@ func _drop_dragged_storage_item(mouse_position: Vector2) -> void:
 	if _drag_candidate_source == DRAG_SOURCE_PARTY:
 		# The backpack icon is a valid drop target even while its panel is closed.
 		# Dropping there stores the creature in the first available bag slot.
-		if _is_point_inside_control(bag_button, mouse_position) \
+		if bag_launcher.contains_global_point(mouse_position) \
 			and _move_party_item_to_first_empty_bag(_drag_candidate_index):
 			return
 
@@ -1818,7 +1515,7 @@ func _drop_dragged_storage_item(mouse_position: Vector2) -> void:
 			_move_bag_item_to_party(_drag_candidate_index, party_index)
 			return
 
-	if not _is_point_inside_control(top_sell_button, mouse_position):
+	if not top_action_bar.contains_sell_point(mouse_position):
 		return
 
 	match _drag_candidate_source:
@@ -1865,9 +1562,7 @@ func _can_sell_storage_items() -> bool:
 
 
 func _set_sell_button_visible(is_visible: bool) -> void:
-	top_sell_button.visible = is_visible and _can_sell_storage_items()
-	if top_sell_button.visible:
-		top_sell_button.move_to_front()
+	top_action_bar.set_sell_available(is_visible and _can_sell_storage_items())
 
 
 func _is_shop_item_available(shop_index: int) -> bool:
@@ -2141,17 +1836,21 @@ func _is_point_inside_control(control: Control, mouse_position: Vector2) -> bool
 
 
 func _create_shop_info_panel() -> void:
-	var panel_script := load(SPRITE_INFO_PANEL_SCRIPT_PATH) as Script
-	if panel_script == null:
-		push_warning("Sprite info panel script not found: %s" % SPRITE_INFO_PANEL_SCRIPT_PATH)
+	_shop_info_panel = SPRITE_INFO_PANEL_SCENE.instantiate() as Control
+	if _shop_info_panel == null:
+		push_warning("Sprite info panel prefab could not be instantiated.")
 		return
-
-	_shop_info_panel = panel_script.new() as Control
 	_shop_info_panel.name = "ShopInfoPreview"
 	_shop_info_panel.visible = false
 	_shop_info_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_shop_info_panel.z_index = 300
-	get_tree().current_scene.add_child.call_deferred(_shop_info_panel)
+	var scene_root := get_tree().current_scene
+	if scene_root == null:
+		push_warning("Sprite info panel cannot find current scene.")
+		_shop_info_panel.queue_free()
+		_shop_info_panel = null
+		return
+	scene_root.add_child(_shop_info_panel)
 
 
 func _on_shop_button_mouse_entered(shop_index: int) -> void:
@@ -2335,15 +2034,6 @@ func _get_buttons_from_slots(slots: Array[Control]) -> Array[TextureButton]:
 		if button != null:
 			buttons.append(button)
 	return buttons
-
-
-func _get_direct_control_children(root: Node) -> Array[Control]:
-	var controls: Array[Control] = []
-	for child in root.get_children():
-		if child is Control:
-			controls.append(child)
-
-	return controls
 
 
 func _collect_texture_buttons(node: Node, buttons: Array[TextureButton]) -> void:

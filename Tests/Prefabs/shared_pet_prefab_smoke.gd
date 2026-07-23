@@ -1,8 +1,9 @@
 extends SceneTree
 
 const PET_PREFAB_PATH := "res://Features/Battle/Prefabs/Units/BattleUnit/BattleUnit.tscn"
+const COLLECTION_PET_PREFAB_PATH := "res://Shared/Prefabs/Pet/CollectionPetView.tscn"
 const FLOATING_UI_SCENE_PATH := "res://Features/ArtistFlow/Views/ArtistFlowView.tscn"
-const TEST_TEXTURE_PATH := "res://Features/ArtistFlow/Art/Pets/Sprites/Sprite_WhiteFox.png"
+const TEST_TEXTURE_PATH := "res://Shared/Art/Pets/Sprites/Sprite_WhiteFox.png"
 
 
 func _initialize() -> void:
@@ -56,6 +57,11 @@ func _run() -> void:
 		return
 
 	pet_view.queue_free()
+	await process_frame
+	var collection_prefab := load(COLLECTION_PET_PREFAB_PATH) as PackedScene
+	if collection_prefab == null:
+		_fail("Collection pet prefab could not be loaded.")
+		return
 	var fixture_root := Node.new()
 	root.add_child(fixture_root)
 	current_scene = fixture_root
@@ -66,34 +72,35 @@ func _run() -> void:
 	var party_button := floating_ui.get_node("MainBG/Containers/Party/Party_Container/Party_Slot/PareyButton") as TextureButton
 	var bag_button := floating_ui.get_node("MainBG/Containers/Middle/Middle_Bag/Bag_Slot/Bag_Button") as TextureButton
 	var shop_button := floating_ui.get_node("MainBG/Containers/Middle/Middle_Shop/Shop_Slot/Shop_Button") as TextureButton
-	if party_button.get_node_or_null("SharedPetView") == null:
+	if party_button.get_node_or_null("CollectionPetView") == null:
 		_fail("Party pets are not connected to the shared prefab.")
 		return
-	if bag_button.get_node_or_null("SharedPetView") == null:
+	if bag_button.get_node_or_null("CollectionPetView") == null:
 		_fail("Bag pets are not connected to the shared prefab.")
 		return
-	if shop_button.get_node_or_null("SharedPetView") != null:
-		_fail("Shop offers must retain their original TextureButton presentation.")
+	if shop_button.get_node_or_null("CollectionPetView") == null:
+		_fail("Shop offers are not connected to the shared collection prefab.")
 		return
 	var middle := floating_ui.get_node("MainBG/Containers/Middle")
 	if not middle.call("_set_party_item", 0, texture, &"bronze"):
 		_fail("A purchased pet could not enter the party slot.")
 		return
-	var party_view := party_button.get_node("SharedPetView") as Control
-	if party_view.call("get_display_mode") != &"collection" or party_view.call("get_display_texture") != texture:
+	var party_view := party_button.get_node("CollectionPetView") as Control
+	if party_view.call("get_display_texture") != texture:
 		_fail("The purchased party pet did not render through collection mode.")
 		return
 	if not middle.call("_set_bag_item", 0, texture, &"bronze"):
 		_fail("A purchased pet could not enter the bag slot.")
 		return
-	var bag_view := bag_button.get_node("SharedPetView") as Control
-	if bag_view.call("get_display_mode") != &"collection" or bag_view.call("get_display_texture") != texture:
+	var bag_view := bag_button.get_node("CollectionPetView") as Control
+	if bag_view.call("get_display_texture") != texture:
 		_fail("The purchased bag pet did not render through collection mode.")
 		return
 
 	print("SHARED_PET_PREFAB_OK prefab=%s scripts=%d" % [PET_PREFAB_PATH, script_paths.size()])
 	current_scene = null
-	fixture_root.queue_free()
+	fixture_root.free()
+	await process_frame
 	await process_frame
 	quit()
 

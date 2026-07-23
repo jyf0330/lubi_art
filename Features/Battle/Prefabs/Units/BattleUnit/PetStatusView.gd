@@ -36,16 +36,37 @@ func bind_battle_data(data: Dictionary) -> void:
 func update_hp(value: int) -> void:
 	_data["hp"] = value
 	_set_stat_value(hp_label, max(0, value))
+	hp_label.add_theme_color_override("font_color", Color.WHITE)
 
 
 func update_attack(value: int) -> void:
 	_data["attack_damage"] = value
 	_set_stat_value(attack_label, max(0, value))
+	attack_label.add_theme_color_override("font_color", Color.WHITE)
 
 
-func show_damage_preview(value: int, visible: bool) -> void:
+func show_hp_preview(value: int, color: Color) -> void:
+	_set_stat_value(hp_label, max(0, value))
+	hp_label.add_theme_color_override("font_color", color)
+
+
+func show_damage_preview(
+	value: int,
+	visible: bool,
+	color: Color = Color(1.0, 0.22, 0.14),
+	alignment: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT
+) -> void:
 	damage_preview_label.text = "-%d" % max(0, value)
 	damage_preview_label.visible = visible
+	damage_preview_label.add_theme_color_override("font_color", color)
+	damage_preview_label.horizontal_alignment = alignment
+
+
+func clear_preview() -> void:
+	update_hp(int(_data.get("hp", 0)))
+	update_attack(int(_data.get("attack_damage", _data.get("attack", 0))))
+	damage_preview_label.text = ""
+	damage_preview_label.visible = false
 
 
 func snapshot() -> Dictionary:

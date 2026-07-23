@@ -112,6 +112,34 @@ func update_attack(value: int) -> void:
 	status_view.call("update_attack", value)
 
 
+func show_health_preview(damage: int, color: Color) -> void:
+	var preview_hp := maxi(0, int(pet_data.get("hp", 0)) - maxi(0, damage))
+	status_view.call("show_hp_preview", preview_hp, color)
+
+
+func show_damage_preview(
+	damage: int,
+	color: Color,
+	alignment: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT
+) -> void:
+	status_view.call("show_damage_preview", maxi(0, damage), damage > 0, color, alignment)
+
+
+func show_death_preview(texture: Texture2D, preview_scale: Vector2) -> void:
+	death_mark.texture = texture
+	death_mark.scale = preview_scale
+	death_mark.visible = texture != null
+
+
+func clear_combat_preview() -> void:
+	status_view.call("clear_preview")
+	death_mark.visible = false
+
+
+func set_visual_tint(color: Color) -> void:
+	modulate = color
+
+
 func set_selected(selected: bool) -> void:
 	interaction.call("set_selected", selected)
 

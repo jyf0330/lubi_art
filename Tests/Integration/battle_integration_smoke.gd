@@ -44,4 +44,14 @@ func _run() -> void:
 		return
 
 	print("Battle integration smoke test passed.")
+	await _cleanup_current_scene()
 	quit()
+
+
+func _cleanup_current_scene() -> void:
+	var scene := current_scene
+	current_scene = null
+	if is_instance_valid(scene):
+		scene.free()
+	await process_frame
+	await process_frame

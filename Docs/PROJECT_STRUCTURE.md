@@ -32,6 +32,7 @@
 │   │   │   └── ArtistFlowDebugController.gd
 │   │   │       [有代码：调试图片轮换]
 │   │   ├── Prefabs/
+│   │   │   ├── Effects/MergeBurstView.tscn
 │   │   │   ├── Route/RouteOptionsPanelView.tscn
 │   │   │   │   └── RouteOptionSlot.tscn × 3
 │   │   │   ├── Shop/ShopPanelView.tscn
@@ -50,6 +51,7 @@
 │       ├── Controllers/
 │       ├── Prefabs/
 │       │   ├── Board/
+│       │   │   [棋盘、悬停/行动标记、元素陷阱独立表现]
 │       │   ├── Units/
 │       │   ├── HUD/
 │       │   └── Effects/
@@ -65,7 +67,10 @@
 │   ├── UI/Buttons/
 │   └── Prefabs/
 │       ├── Pet/
-│       │   [跨战斗、队伍和背包复用的宠物表现资源]
+│       │   ├── CollectionPetView.tscn
+│       │   │   [商店、队伍、背包和拖拽预览统一宠物卡片表现]
+│       │   └── SpriteInfoPanel.tscn
+│       │       [宠物详情完整预制体入口]
 │       └── HUD/GoldCounter/GoldCounterView.tscn
 │           [ArtistFlow 与 Battle 共用的金币显示]
 │

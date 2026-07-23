@@ -1,7 +1,7 @@
 extends SceneTree
 
 const FLOATING_UI_SCENE := "res://Features/ArtistFlow/Views/ArtistFlowView.tscn"
-const WHITE_FOX_TEXTURE := "res://Features/ArtistFlow/Art/Pets/Sprites/Sprite_WhiteFox.png"
+const WHITE_FOX_TEXTURE := "res://Shared/Art/Pets/Sprites/Sprite_WhiteFox.png"
 const ACTIVE_GAME_SESSION_META := &"active_game_session"
 const PARTY := &"party"
 const BAG := &"bag"

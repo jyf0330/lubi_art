@@ -1,7 +1,7 @@
 extends SceneTree
 
 const FLOATING_UI_SCENE := "res://Features/ArtistFlow/Views/ArtistFlowView.tscn"
-const CREATURE_TEXTURE_PATH := "res://Features/ArtistFlow/Art/Pets/Sprites/Sprite_WhiteFox.png"
+const CREATURE_TEXTURE_PATH := "res://Shared/Art/Pets/Sprites/Sprite_WhiteFox.png"
 const SILVER_QUALITY := &"silver"
 const EXPECTED_FRAME_SIZE := Vector2(238.0, 238.0)
 const EXPECTED_FRAME_POSITION := Vector2(-9.0, -9.0)

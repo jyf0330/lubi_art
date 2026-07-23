@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Shared/Prefabs/Pet/SpriteInfoPanel.gd" id="1_script"]
+
+[node name="SpriteInfoPanel" type="Control"]
+custom_minimum_size = Vector2(348, 531)
+offset_right = 348.0
+offset_bottom = 531.0
+mouse_filter = 2
+script = ExtResource("1_script")

@@ -22,6 +22,8 @@ func setup(view_model: Dictionary) -> void:
 	_kind = StringName(view_model.get("kind", &""))
 	if _button != null:
 		_button.disabled = bool(view_model.get("disabled", false))
+		if view_model.has("texture"):
+			_button.texture_normal = view_model.get("texture") as Texture2D
 	if _logo != null:
 		_logo.texture = view_model.get("logo") as Texture2D
 		_logo.visible = _logo.texture != null

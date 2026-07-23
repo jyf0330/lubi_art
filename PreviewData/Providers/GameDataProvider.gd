@@ -16,20 +16,20 @@ const BATTLE_PREVIEW_RULES := {
 	"hero_barrage_max_volleys": 64,
 }
 const PRESENTATION := {
-	"creature_catalog_dir": "res://Features/ArtistFlow/Art/Pets/Sprites",
+	"creature_catalog_dir": "res://Shared/Art/Pets/Sprites",
 	"shop_boss_image_dir": "res://Features/ArtistFlow/Art/Shop/Bosses",
 	"pet_sprites": {
-		"pal_001": "res://Features/ArtistFlow/Art/Pets/Sprites/Sprite_CloudPuff.png",
-		"pal_002": "res://Features/ArtistFlow/Art/Pets/Sprites/Sprite_GrayCat.png",
-		"pal_003": "res://Features/ArtistFlow/Art/Pets/Sprites/Sprite_BrownSparrow.png",
-		"pal_004": "res://Features/ArtistFlow/Art/Pets/Sprites/Sprite_LeafCub.png",
-		"pal_005": "res://Features/ArtistFlow/Art/Pets/Sprites/Sprite_WhiteFox.png",
-		"pal_042": "res://Features/Battle/Art/Units/Sprite_FireLion.png",
-		"pal_077": "res://Features/Battle/Art/Units/Sprite_ShadowDragon.png",
+		"pal_001": "res://Shared/Art/Pets/Sprites/Sprite_CloudPuff.png",
+		"pal_002": "res://Shared/Art/Pets/Sprites/Sprite_GrayCat.png",
+		"pal_003": "res://Shared/Art/Pets/Sprites/Sprite_BrownSparrow.png",
+		"pal_004": "res://Shared/Art/Pets/Sprites/Sprite_LeafCub.png",
+		"pal_005": "res://Shared/Art/Pets/Sprites/Sprite_WhiteFox.png",
+		"pal_042": "res://Shared/Art/Pets/Sprites/Sprite_FireLion.png",
+		"pal_077": "res://Shared/Art/Pets/Sprites/Sprite_ShadowDragon.png",
 	},
 	"leader_sprites": {
-		"player_hero": "res://Features/Battle/Art/Heroes/sun_wukong_ai_220x210.png",
-		"enemy_boss": "res://Features/Battle/Art/Heroes/spider_spirit_ai_220x210.png",
+		"player_hero": "res://Shared/Art/Heroes/sun_wukong_ai_220x210.png",
+		"enemy_boss": "res://Shared/Art/Heroes/spider_spirit_ai_220x210.png",
 	},
 }
 

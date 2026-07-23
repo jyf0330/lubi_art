@@ -149,7 +149,8 @@ func _run() -> void:
 	if enemy_preview_unit.is_empty():
 		_fail("Editor preview has no enemy available for the HP preview check")
 		return
-	var preview_hp_label := enemy_preview_unit["hp_label"] as Label
+	var preview_unit_view := enemy_preview_unit["node"] as Control
+	var preview_hp_label := preview_unit_view.get_node("HpLabel") as Label
 	var original_hp := int(enemy_preview_unit["hp"])
 	board.call("_show_health_preview", enemy_preview_unit, 2)
 	if preview_hp_label.text != str(original_hp - 2):
@@ -171,8 +172,9 @@ func _run() -> void:
 	if player_preview_unit.is_empty():
 		_fail("Editor preview has no player unit available for the incoming-damage preview check")
 		return
-	var player_hp_label := player_preview_unit["hp_label"] as Label
-	var player_damage_label := player_preview_unit["damage_preview_label"] as Label
+	var player_preview_view := player_preview_unit["node"] as Control
+	var player_hp_label := player_preview_view.get_node("HpLabel") as Label
+	var player_damage_label := player_preview_view.get_node("DamagePreviewLabel") as Label
 	var original_player_hp := int(player_preview_unit["hp"])
 	board.call("_show_incoming_damage_preview", player_preview_unit, 2)
 	if player_hp_label.text != str(original_player_hp - 2) or player_hp_label.get_theme_color("font_color").g > 0.5:
@@ -205,7 +207,8 @@ func _run() -> void:
 	if int(enemy_hero["hp"]) != expected_enemy_hero_hp:
 		_fail("A creature attack did not reduce the enemy hero HP: %d" % int(enemy_hero["hp"]))
 		return
-	var enemy_hero_hp_label := enemy_hero["hp_label"] as Label
+	var enemy_hero_view := enemy_hero["node"] as Control
+	var enemy_hero_hp_label := enemy_hero_view.get_node("HpLabel") as Label
 	if enemy_hero_hp_label.text != str(expected_enemy_hero_hp):
 		_fail("The enemy hero HP label did not update after taking creature damage")
 		return

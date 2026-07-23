@@ -2,7 +2,7 @@ extends Control
 class_name SpriteInfoPanel
 
 const ART_DIR := "res://Shared/Prefabs/Pet/SpriteInfo/Art"
-const UI_FONT_PATH := "res://Shared/Prefabs/Pet/SpriteInfo/Fonts/fusion-pixel-10px-monospaced-zh_hans.ttf"
+const UI_FONT_PATH := "res://Shared/Fonts/fusion-pixel-10px-monospaced-zh_hans.ttf"
 const CONTENT_BLOCK_WIDTH := 280
 const HEADER_SIZE := Vector2(CONTENT_BLOCK_WIDTH, 54)
 const ATTACK_PANEL_SIZE := Vector2(CONTENT_BLOCK_WIDTH, 150)

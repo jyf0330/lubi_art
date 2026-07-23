@@ -29,3 +29,7 @@ func set_capacity(used: int, capacity: int = 5) -> void:
 
 func get_button() -> TextureButton:
 	return bag_button
+
+
+func contains_global_point(point: Vector2) -> bool:
+	return is_visible_in_tree() and bag_button.get_global_rect().has_point(point)

@@ -1,6 +1,8 @@
 extends PanelContainer
 class_name CreatureSlotView
 
+const COLLECTION_PET_VIEW_SCENE := preload("res://Shared/Prefabs/Pet/CollectionPetView.tscn")
+
 ## Scripted art prefab shared by shop, party, and bag slots.
 ## The controller supplies presentation data; this prefab owns its visuals and
 ## converts low-level button events into a stable signal contract.
@@ -13,6 +15,7 @@ signal pointer_exited(slot: CreatureSlotView)
 
 var _view_model: Dictionary = {}
 var _button: TextureButton
+var _collection_view: Control
 
 
 func _ready() -> void:
@@ -37,6 +40,7 @@ func refresh(view_model: Dictionary) -> void:
 
 func clear() -> void:
 	setup({"texture": null, "disabled": false, "visible": true})
+	clear_collection_data()
 
 
 func get_button() -> TextureButton:
@@ -46,6 +50,24 @@ func get_button() -> TextureButton:
 
 func get_view_model() -> Dictionary:
 	return _view_model.duplicate(true)
+
+
+func set_collection_data(data: Dictionary, presentation: Dictionary) -> void:
+	_view_model = data.duplicate(true)
+	_bind_button()
+	_ensure_collection_view()
+	_button.texture_normal = null
+	_collection_view.call("setup", presentation)
+
+
+func clear_collection_data() -> void:
+	_ensure_collection_view()
+	_collection_view.call("clear")
+
+
+func set_merge_indicator(texture: Texture2D, opacity: float, is_visible: bool) -> void:
+	_ensure_collection_view()
+	_collection_view.call("set_merge_indicator", texture, opacity, is_visible)
 
 
 func _bind_button() -> void:
@@ -63,6 +85,18 @@ func _bind_button() -> void:
 		_button.mouse_entered.connect(_on_pointer_entered)
 	if not _button.mouse_exited.is_connected(_on_pointer_exited):
 		_button.mouse_exited.connect(_on_pointer_exited)
+	_ensure_collection_view()
+
+
+func _ensure_collection_view() -> void:
+	if is_instance_valid(_collection_view) or _button == null:
+		return
+	_collection_view = COLLECTION_PET_VIEW_SCENE.instantiate() as Control
+	_collection_view.name = "CollectionPetView"
+	_collection_view.position = Vector2.ZERO
+	_collection_view.size = _button.size if _button.size != Vector2.ZERO else Vector2(220.0, 220.0)
+	_collection_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_button.add_child(_collection_view)
 
 
 func _find_texture_button(node: Node) -> TextureButton:

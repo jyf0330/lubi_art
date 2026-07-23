@@ -24,9 +24,11 @@ const ROUND_BANNER_SCENE := preload("res://Features/Battle/Prefabs/HUD/RoundBann
 const MONSTER_BITE_SCENE := preload("res://Features/Battle/Prefabs/Effects/MonsterBite/MonsterBiteEffect.tscn")
 const DAMAGE_NUMBER_SCENE := preload("res://Features/Battle/Prefabs/Effects/DamageNumber/DamageNumber.tscn")
 const ELEMENT_BULLET_SCENE := preload("res://Features/Battle/Prefabs/Effects/ElementBullet/ElementBullet.tscn")
+const BATTLE_TEXTURE_MARKER_SCENE := preload("res://Features/Battle/Prefabs/Board/BattleTextureMarkerView.tscn")
+const ELEMENT_TRAP_SCENE := preload("res://Features/Battle/Prefabs/Board/ElementTrapView.tscn")
 
-const FIRE_SPRITE := preload("res://Features/Battle/Art/Units/Sprite_FlameCub.png")
-const WATER_SPRITE := preload("res://Features/Battle/Art/Units/Sprite_WaterWisp.png")
+const FIRE_SPRITE := preload("res://Shared/Art/Pets/Sprites/Sprite_FlameCub.png")
+const WATER_SPRITE := preload("res://Shared/Art/Pets/Sprites/Sprite_WaterWisp.png")
 const FIRE_BULLET := preload("res://Features/Battle/Art/Combat/Projectiles/fire_bullet.png")
 const WATER_BULLET := preload("res://Features/Battle/Art/Combat/Projectiles/water_bullet.png")
 const EARTH_BULLET := preload("res://Features/Battle/Art/Combat/Projectiles/earth_bullet.png")
@@ -155,7 +157,7 @@ func _ready() -> void:
 	if not Engine.is_editor_hint():
 		_load_clock_state()
 	_build_board()
-	_prepare_clock_indicator()
+	_prepare_clock_indicator.call_deferred()
 	if Engine.is_editor_hint():
 		_refresh_deploy_highlights()
 		set_process(false)
@@ -254,7 +256,7 @@ func _prepare_clock_indicator() -> void:
 		return
 	_clock_root.position = CLOCK_POSITION
 	_clock_root.z_index = 20
-	scene_root.add_child.call_deferred(_clock_root)
+	scene_root.add_child(_clock_root)
 	_clock_root.call("setup", _clock_total_hours, CLOCK_SIZE, false)
 
 
@@ -316,17 +318,17 @@ func _build_board() -> void:
 
 
 func _create_hover_frame() -> void:
-	var frame := TextureRect.new()
+	var frame := BATTLE_TEXTURE_MARKER_SCENE.instantiate() as TextureRect
+	if frame == null:
+		return
 	add_child(frame)
 	frame.name = "HoverFrame"
-	frame.texture = HOVER_FRAME
-	frame.size = _cell_size * HOVER_FRAME_SCALE
-	frame.custom_minimum_size = Vector2.ZERO
-	frame.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	frame.stretch_mode = TextureRect.STRETCH_SCALE
-	frame.z_index = 18
-	frame.visible = false
+	frame.call("setup", {
+		"texture": HOVER_FRAME,
+		"size": _cell_size * HOVER_FRAME_SCALE,
+		"z_index": 18,
+		"visible": false,
+	})
 	_hover_frame = frame
 
 
@@ -342,9 +344,12 @@ func _update_hover_frame() -> void:
 
 	var frame_size := _cell_size * HOVER_FRAME_SCALE
 	_hovered_grid = grid
-	_hover_frame.size = frame_size
-	_hover_frame.position = _cell_origin(grid) - (frame_size - _cell_size) * 0.5
-	_hover_frame.visible = _phase == PHASE_DEPLOY and not _is_round_banner_showing
+	_hover_frame.call(
+		"show_at",
+		_cell_origin(grid) - (frame_size - _cell_size) * 0.5,
+		frame_size,
+		_phase == PHASE_DEPLOY and not _is_round_banner_showing
+	)
 
 
 func _stat_badge_presentation(
@@ -434,24 +439,8 @@ func _add_unit(unit_data: Dictionary) -> void:
 	})
 	unit_node.z_index = 10
 	unit_node.mouse_filter = Control.MOUSE_FILTER_STOP
-	var shadow := unit_node.get_node("UnitShadow") as Control
-	var sprite := unit_node.get_node("Sprite") as Sprite2D
-	var health_icon := unit_node.get_node("HealthIcon") as TextureRect
-	var hp_label := unit_node.get_node("HpLabel") as Label
-	var attack_icon := unit_node.get_node("AttackIcon") as TextureRect
-	var attack_label := unit_node.get_node("AttackLabel") as Label
-	var damage_preview_label := unit_node.get_node("DamagePreviewLabel") as Label
-	var death_mark := unit_node.get_node("DeathMarkPreview") as Sprite2D
 	var unit := {
 		"node": unit_node,
-		"shadow": shadow,
-		"sprite": sprite,
-		"health_icon": health_icon,
-		"hp_label": hp_label,
-		"attack_icon": attack_icon,
-		"attack_label": attack_label,
-		"damage_preview_label": damage_preview_label,
-		"death_mark": death_mark,
 		"team": team,
 		"element": String(unit_data["element"]),
 		"grid": board_index,
@@ -693,18 +682,19 @@ func _set_attack_order_marker(grid: Vector2i, dot_count: int) -> void:
 	if texture == null:
 		return
 
-	var marker := TextureRect.new()
+	var marker := BATTLE_TEXTURE_MARKER_SCENE.instantiate() as TextureRect
+	if marker == null:
+		return
 	var marker_size := ATTACK_ORDER_MARKER_SIZE
 	var cell := _cells[key] as Panel
 	cell.add_child(marker)
 	marker.name = "AttackOrderMarker_%d" % dot_count
-	marker.texture = texture
-	marker.size = marker_size
-	marker.position = (_cell_size - marker_size) * 0.5
-	marker.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	marker.stretch_mode = TextureRect.STRETCH_SCALE
-	marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	marker.z_index = 6
+	marker.call("setup", {
+		"texture": texture,
+		"size": marker_size,
+		"position": (_cell_size - marker_size) * 0.5,
+		"z_index": 6,
+	})
 
 	_attack_order_markers[key] = marker
 
@@ -1251,41 +1241,28 @@ func _place_trap(grid: Vector2i, element: String, damage: int) -> void:
 	var key := _grid_key(grid)
 	if _traps.has(key):
 		var existing_trap: Dictionary = _traps[key]
-		existing_trap["damage"] = int(existing_trap.get("damage", 0)) + damage
-		if existing_trap.has("damage_label") and is_instance_valid(existing_trap["damage_label"]):
-			var existing_damage_label := existing_trap["damage_label"] as Label
-			existing_damage_label.text = "%d" % int(existing_trap["damage"])
+		var trap_view := existing_trap.get("node") as Node2D
+		if trap_view != null and trap_view.has_method("add_damage"):
+			existing_trap["damage"] = int(trap_view.call("add_damage", damage))
 		_traps[key] = existing_trap
 		return
 
-	var trap_sprite := Sprite2D.new()
-	add_child(trap_sprite)
-	trap_sprite.name = "Trap_%s" % key.replace(":", "_")
-	trap_sprite.z_index = 6
-	trap_sprite.texture = _buff_texture_for_element(element)
-	trap_sprite.position = _cell_center(grid)
-	trap_sprite.scale = _buff_scale_for_cell(trap_sprite.texture)
-	trap_sprite.modulate = Color(1.0, 1.0, 1.0, 0.82)
-
-	var damage_label := Label.new()
-	add_child(damage_label)
-	damage_label.name = "TrapDamage_%s" % key.replace(":", "_")
-	damage_label.z_index = 7
-	damage_label.position = _cell_origin(grid) + Vector2(_cell_size.x - 42.0, 8.0)
-	damage_label.size = Vector2(34.0, 28.0)
-	damage_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	damage_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	damage_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	damage_label.text = "%d" % damage
-	damage_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.24))
-	damage_label.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.9))
-	damage_label.add_theme_constant_override("shadow_offset_x", 2)
-	damage_label.add_theme_constant_override("shadow_offset_y", 2)
-	damage_label.add_theme_font_size_override("font_size", 22)
+	var trap_view := ELEMENT_TRAP_SCENE.instantiate() as Node2D
+	if trap_view == null:
+		return
+	add_child(trap_view)
+	trap_view.name = "Trap_%s" % key.replace(":", "_")
+	trap_view.position = _cell_center(grid)
+	var trap_texture := _buff_texture_for_element(element)
+	trap_view.call("setup", {
+		"texture": trap_texture,
+		"sprite_scale": _buff_scale_for_cell(trap_texture),
+		"damage": damage,
+		"cell_size": _cell_size,
+	})
 
 	_traps[key] = {
-		"node": trap_sprite,
-		"damage_label": damage_label,
+		"node": trap_view,
 		"grid": grid,
 		"element": element,
 		"damage": damage,
@@ -1299,8 +1276,6 @@ func _remove_trap(key: String) -> void:
 	var trap: Dictionary = _traps[key]
 	if trap.has("node") and is_instance_valid(trap["node"]):
 		trap["node"].queue_free()
-	if trap.has("damage_label") and is_instance_valid(trap["damage_label"]):
-		trap["damage_label"].queue_free()
 	_traps.erase(key)
 
 
@@ -1492,10 +1467,9 @@ func _show_health_preview(unit: Dictionary, damage: int) -> void:
 	if damage <= 0:
 		return
 
-	var preview_hp: int = maxi(0, int(unit["hp"]) - damage)
-	var hp_label := unit["hp_label"] as Label
-	_set_stat_label_value(hp_label, preview_hp)
-	hp_label.add_theme_color_override("font_color", STAT_NUMBER_PREVIEW_COLOR)
+	var unit_view := unit.get("node") as Control
+	if unit_view != null and unit_view.has_method("show_health_preview"):
+		unit_view.call("show_health_preview", damage, STAT_NUMBER_PREVIEW_COLOR)
 
 
 func _show_incoming_damage_preview(unit: Dictionary, damage: int) -> void:
@@ -1507,21 +1481,17 @@ func _show_damage_preview_label(unit: Dictionary, damage: int, color: Color, ali
 	if damage <= 0:
 		return
 
-	var label := unit["damage_preview_label"] as Label
-	label.horizontal_alignment = alignment
-	label.add_theme_color_override("font_color", color)
-	label.text = "-%d" % damage
-	label.visible = true
+	var unit_view := unit.get("node") as Control
+	if unit_view != null and unit_view.has_method("show_damage_preview"):
+		unit_view.call("show_damage_preview", damage, color, alignment)
 
 
 func _show_death_mark_preview(unit: Dictionary) -> void:
-	if not unit.has("death_mark") or not is_instance_valid(unit["death_mark"]):
+	var unit_view := unit.get("node") as Control
+	if unit_view == null or not unit_view.has_method("show_death_preview"):
 		return
-
-	var mark := unit["death_mark"] as Sprite2D
-	mark.texture = _death_mark_texture_for_unit(String(unit["team"]))
-	mark.scale = _death_mark_preview_scale(mark.texture)
-	mark.visible = true
+	var texture := _death_mark_texture_for_unit(String(unit["team"]))
+	unit_view.call("show_death_preview", texture, _death_mark_preview_scale(texture))
 
 
 func _calculate_turn_damage_preview(override_unit: Dictionary, override_grid: Vector2i, use_override: bool) -> Dictionary:
@@ -1810,17 +1780,9 @@ func _unit_source_id(unit: Dictionary) -> int:
 
 func _clear_damage_previews() -> void:
 	for unit in _units:
-		if unit.has("hp_label") and is_instance_valid(unit["hp_label"]):
-			var hp_label := unit["hp_label"] as Label
-			_set_stat_label_value(hp_label, int(unit["hp"]))
-			hp_label.add_theme_color_override("font_color", STAT_NUMBER_COLOR)
-		if unit.has("damage_preview_label") and is_instance_valid(unit["damage_preview_label"]):
-			var label := unit["damage_preview_label"] as Label
-			label.text = ""
-			label.visible = false
-		if unit.has("death_mark") and is_instance_valid(unit["death_mark"]):
-			var mark := unit["death_mark"] as Sprite2D
-			mark.visible = false
+		var unit_view := unit.get("node") as Control
+		if unit_view != null and unit_view.has_method("clear_combat_preview"):
+			unit_view.call("clear_combat_preview")
 
 
 func _position_to_board_index(local_position: Vector2) -> Vector2i:
@@ -1964,32 +1926,12 @@ func _monster_bite_scale() -> Vector2:
 
 func _update_unit_visual(unit: Dictionary) -> void:
 	var node := unit["node"] as Control
-	var sprite := unit["sprite"] as Sprite2D
-	var hp_label := unit["hp_label"] as Label
-	var attack_label := unit["attack_label"] as Label
-	node.modulate = Color.WHITE
-	sprite.modulate = Color.WHITE
+	if node.has_method("set_visual_tint"):
+		node.call("set_visual_tint", Color.WHITE)
 	if node.has_method("update_hp"):
 		node.call("update_hp", int(unit["hp"]))
-	else:
-		_set_stat_label_value(hp_label, int(unit["hp"]))
 	if node.has_method("update_attack"):
 		node.call("update_attack", int(unit["attack_damage"]))
-	else:
-		_set_stat_label_value(attack_label, int(unit["attack_damage"]))
-	hp_label.add_theme_color_override("font_color", STAT_NUMBER_COLOR)
-	attack_label.add_theme_color_override("font_color", STAT_NUMBER_COLOR)
-
-
-func _set_stat_label_value(label: Label, value: int) -> void:
-	label.text = "%d" % value
-	var digit_count := label.text.length()
-	var font_size := 30
-	if digit_count == 3:
-		font_size = 27
-	elif digit_count >= 4:
-		font_size = 23
-	label.add_theme_font_size_override("font_size", font_size)
 
 
 func _apply_unit_frame_style(unit: Dictionary, selected: bool) -> void:

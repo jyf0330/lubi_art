@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://Shared/Prefabs/HUD/GoldCounter/GoldCounterView.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/UI/Images/UI_Images/UI_GoldCounter_Background.png" id="2_bg"]
-[ext_resource type="Texture2D" path="res://Features/ArtistFlow/Art/UI/Images/UI_Images/UI_GoldCoin_Icon.png" id="3_coin"]
+[ext_resource type="Texture2D" path="res://Shared/Art/UI/Economy/UI_GoldCounter_Background.png" id="2_bg"]
+[ext_resource type="Texture2D" path="res://Shared/Art/UI/Economy/UI_GoldCoin_Icon.png" id="3_coin"]
 
 [node name="GoldCounter" type="Control"]
 z_index = 30

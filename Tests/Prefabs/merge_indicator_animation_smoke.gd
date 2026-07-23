@@ -1,6 +1,7 @@
 extends SceneTree
 
-const MIDDLE_CONTROLLER_SCRIPT := "res://Features/ArtistFlow/Controllers/ArtistFlowPreviewController.gd"
+const COLLECTION_PET_PREFAB := "res://Shared/Prefabs/Pet/CollectionPetView.tscn"
+const INDICATOR_TEXTURE := "res://Features/ArtistFlow/Art/UI/Images/Indicators/sprite_merge_upgrade_chevrons_220.png"
 const EXPECTED_OPACITY := 0.72
 const EXPECTED_REPEAT_OFFSET := 220.0
 const EXPECTED_LOOP_DURATION := 1.15
@@ -11,19 +12,16 @@ func _initialize() -> void:
 
 
 func _run() -> void:
-	# Attach the controller after the node enters the tree so this focused test
-	# does not run the full UI scene's unrelated startup flow.
-	var middle := NinePatchRect.new()
-	root.add_child(middle)
-	middle.set_script(load(MIDDLE_CONTROLLER_SCRIPT) as Script)
-	var button := TextureButton.new()
-	button.size = Vector2(220.0, 220.0)
-	middle.add_child(button)
-	var indicator := middle.call("_ensure_merge_indicator", button) as TextureRect
+	var packed := load(COLLECTION_PET_PREFAB) as PackedScene
+	var pet_view := packed.instantiate() as Control
+	root.add_child(pet_view)
+	pet_view.call("setup", {"slot_size": Vector2(220.0, 220.0)})
+	pet_view.call("set_merge_indicator", load(INDICATOR_TEXTURE), EXPECTED_OPACITY, true)
+	var indicator := pet_view.get_node("MergeIndicatorClip/Indicator") as TextureRect
 	if indicator == null:
 		_fail("The merge indicator was not created.")
 		return
-	var follower := indicator.get_node_or_null("MergeUpgradeIndicatorFollower") as TextureRect
+	var follower := indicator.get_node_or_null("Follower") as TextureRect
 	if follower == null:
 		_fail("The merge indicator has no follower entering from below.")
 		return
@@ -58,7 +56,7 @@ func _run() -> void:
 		return
 
 	print("Merge indicator animation smoke test passed.")
-	middle.queue_free()
+	pet_view.queue_free()
 	await process_frame
 	quit()
 

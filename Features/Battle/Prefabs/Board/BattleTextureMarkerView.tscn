@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Features/Battle/Prefabs/Board/BattleTextureMarkerView.gd" id="1_script"]
+
+[node name="BattleTextureMarkerView" type="TextureRect"]
+mouse_filter = 2
+expand_mode = 1
+script = ExtResource("1_script")

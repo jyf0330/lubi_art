@@ -2,8 +2,29 @@
 .godot/
 /android/
 
+# Legacy Godot / C# generated caches
+.import/
+.mono/
+
 # Local previews, recordings, logs, and validation artifacts
 /output/
+/build/
+/dist/
+/exports/
+export_credentials.cfg
+
+# Local editor, temporary, and backup files
+.idea/
+.vscode/
+*.swp
+*~
+*.tmp
+*.temp
+*.log
+*.orig
+*.rej
+*.bak
+*.bak-*
 
 # macOS metadata
 .DS_Store

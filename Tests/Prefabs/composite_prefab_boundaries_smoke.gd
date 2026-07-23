@@ -44,6 +44,7 @@ func _run() -> void:
 		_fail("Battle board did not bind the begin-turn input after ready")
 		return
 	print("Composite scripted prefab boundary smoke test passed.")
+	await _cleanup_current_scene()
 	quit()
 
 
@@ -71,4 +72,14 @@ func _assert_scene_components(scene_path: String, components: Dictionary) -> boo
 
 func _fail(message: String) -> void:
 	push_error(message)
+	await _cleanup_current_scene()
 	quit(1)
+
+
+func _cleanup_current_scene() -> void:
+	var scene := current_scene
+	current_scene = null
+	if is_instance_valid(scene):
+		scene.free()
+	await process_frame
+	await process_frame
